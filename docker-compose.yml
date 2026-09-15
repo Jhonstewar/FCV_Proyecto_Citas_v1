@@ -1,67 +1,92 @@
 services:
+
   mysql:
     image: mysql:8.4
     container_name: fcv-citas-mysql
     restart: unless-stopped
+
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: America/Bogota
+
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "${MYSQL_PORT:-3307}:3306"
+
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database/reference/db.sql:/docker-entrypoint-initdb.d/01-db.sql:ro
+
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"
+        ]
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 20s
 
-  # Contenedor de herramientas para desarrollar el backend sin instalar Maven localmente.
-  # No contiene la solución: monta el repo vacío del estudiante.
+
   citas-api-dev:
     image: maven:3.9-eclipse-temurin-21
     container_name: fcv-citas-api-dev
+    restart: unless-stopped
+
     working_dir: /workspace
-    profiles: ["dev"]
+
     volumes:
       - ./citas-api:/workspace
       - maven_cache:/root/.m2
+
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: ${MYSQL_DATABASE}
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
+
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+
     ports:
       - "${API_PORT:-8080}:8080"
+
     depends_on:
       mysql:
         condition: service_healthy
-    command: ["bash", "-lc", "echo 'citas-api-dev listo. Inicializa Spring Boot dentro de /workspace.'; tail -f /dev/null"]
 
-  # Contenedor Node para React o Angular. El estudiante importará aquí el código
-  # generado desde Stitch / Google AI Studio.
+    command:
+      - bash
+      - -lc
+      - tail -f /dev/null
+
+
   citas-web-dev:
     image: node:24-alpine
     container_name: fcv-citas-web-dev
+    restart: unless-stopped
+
     working_dir: /workspace
-    profiles: ["dev"]
+
     volumes:
       - ./citas-web:/workspace
       - node_cache:/root/.npm
-    environment:
-      VITE_API_URL: ${VITE_API_URL}
+
     ports:
       - "${REACT_PORT:-5173}:5173"
       - "${ANGULAR_PORT:-4200}:4200"
-    command: ["sh", "-lc", "echo 'citas-web-dev listo. Importa React o Angular dentro de /workspace.'; tail -f /dev/null"]
+
+    depends_on:
+      - citas-api-dev
+
+    command:
+      - sh
+      - -lc
+      - tail -f /dev/null
+
 
 volumes:
   mysql_data:
