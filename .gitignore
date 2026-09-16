@@ -5,3 +5,6 @@ mysql-data/
 .idea/
 .vscode/
 db.sql
+# Los repos hijos son independientes (ver AGENTS.md)
+citas-api/
+citas-web/

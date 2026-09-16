@@ -29,6 +29,8 @@ Cada bloque se expande en slots atómicos de 30 minutos. Una especialidad de 30 
 Las citas generales usan `Medicina General`, quedan aprobadas automáticamente y no requieren decisión del administrador.
 Las citas especializadas quedan `REQUESTED` y requieren aprobación ADMIN.
 
+El tipo de cita (`GENERAL` o `SPECIALIZED`) es un catálogo fijo. Cada especialidad referencia su tipo y no repite la política de aprobación; por ello `requires_admin_approval` tiene una única fuente de verdad.
+
 ### Reprogramación
 La solicitud de reprogramación vive en una entidad propia y conserva la fecha anterior y la nueva propuesta. Si el administrador rechaza, el usuario puede decidir conservar o cancelar su cita.
 
