@@ -7,20 +7,29 @@ Plantilla de trabajo para las sesiones **S2 a S6** de la formación de agentes d
 ## Estructura
 
 ```text
-FCV_Proyecto_Citas_v1/
+FCV_Proyecto_Citas_v1/          # Repo orquestador: specs, prompts, skills, infraestructura
 ├── README.md
+├── AGENTS.md                   # Gobernanza canónica de los agentes
+├── CLAUDE.md                   # Específico de Claude Code; apunta a AGENTS.md
 ├── PRD.md
 ├── RESTRICCIONES_TECNICAS.md
 ├── EVIDENCIAS_Y_TRAZABILIDAD.md
 ├── docker-compose.yml
 ├── .env.example
+├── .claude/
+│   ├── agents/                 # Agentes especializados (ver .claude/agents/README.md)
+│   ├── hooks/                  # Hook que recuerda mantener la LLM Wiki en cada turno
+│   └── settings.json
 ├── database/
 ├── prompts/
 ├── skills/
 ├── scripts/
-├── citas-api/       # Repo Git 1: Java/Spring Boot, inicialmente sin implementación
-└── citas-web/       # Repo Git 2: React o Angular, inicialmente sin implementación
+├── citas-api/       # Repo Git independiente: Java/Spring Boot
+└── citas-web/       # Repo Git independiente: React + TypeScript + Vite
 ```
+
+`citas-api/` y `citas-web/` **no están versionados por el repo raíz**: están en su `.gitignore`
+porque son repositorios propios. El raíz solo los orquesta.
 
 ## Stack objetivo
 
@@ -57,6 +66,27 @@ citas-api/docs/wiki/llm-wiki/
 En `skills/` se incluyen las dos Skills proporcionadas por el trainer:
 - `scrum-spec-orchestrator`: genera épicas, historias, tareas, criterios de aceptación y DoD en `docs/wiki/scrum/` sin implementar código.
 - `stitch-design-to-frontend`: guía prototipado, aprobación visual, handoff a Google AI Studio y reconciliación del frontend.
+
+## Agentes
+
+La gobernanza que todos obedecen está en [`AGENTS.md`](AGENTS.md); el catálogo completo, en
+[`.claude/agents/README.md`](.claude/agents/README.md). El agente de entrada es
+`s2-orchestrator`, que ejecuta la secuencia de la sesión S2 y delega en los especialistas.
+
+Dos reglas estructurales: **quien implementa no verifica** —los agentes `*-verifier` corren
+aislados y sin permisos de escritura— y **ningún agente aprueba una HU, crea un repo remoto ni
+hace push**; eso lo confirma siempre una persona.
+
+## LLM Wiki
+
+`citas-api/docs/wiki/llm-wiki/` es la memoria única del proyecto, mantenida por el agente y
+legible en Obsidian. Tres capas: `raw/` (fuentes curadas e inmutables), `wiki/` (síntesis que el
+agente escribe, con `index.md` y `log.md`) y `schema/` (las convenciones).
+
+Las reglas están en [`schema/SCHEMA.md`](citas-api/docs/wiki/llm-wiki/schema/SCHEMA.md), con los
+cuatro workflows: `INGEST` al entrar una fuente, `QUERY` al preguntar, `LEARN` al cerrar una
+interacción con conocimiento durable, y `LINT` como revisión periódica de salud. Un hook de
+`UserPromptSubmit` recuerda la obligación en cada turno.
 
 ## Flujo de desarrollo esperado
 

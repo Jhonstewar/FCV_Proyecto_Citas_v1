@@ -10,6 +10,7 @@ erDiagram
     EPS_PLANS ||--o{ USER_INSURANCE_AFFILIATIONS : selected
 
     USERS ||--o| PROFESSIONALS : profile
+    APPOINTMENT_TYPES ||--o{ SPECIALTIES : classifies
     PROFESSIONALS ||--o{ PROFESSIONAL_SPECIALTIES : has
     SPECIALTIES ||--o{ PROFESSIONAL_SPECIALTIES : assigned
     PROFESSIONALS ||--o{ PROFESSIONAL_LOCATIONS : works_at
@@ -57,12 +58,17 @@ erDiagram
       VARCHAR professional_code UK
       VARCHAR license_number UK
     }
+    APPOINTMENT_TYPES {
+      SMALLINT id PK
+      VARCHAR code UK
+      VARCHAR name
+      BOOLEAN requires_admin_approval
+    }
     SPECIALTIES {
       SMALLINT id PK
       VARCHAR code UK
+      SMALLINT appointment_type_id FK
       SMALLINT appointment_duration_minutes
-      BOOLEAN is_general
-      BOOLEAN requires_admin_approval
     }
     LOCATIONS {
       SMALLINT id PK
