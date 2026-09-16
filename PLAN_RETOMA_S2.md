@@ -3,6 +3,28 @@
 **Guardado:** 2026-09-16. Para retomar, abre Claude Code en esta carpeta y di:
 *"Retoma S2 desde PLAN_RETOMA_S2.md"*. El agente `s2-orchestrator` sabe continuar.
 
+## Retomar en otro equipo
+
+Los subrepos **no** vienen dentro del repo principal (están en su `.gitignore`); hay que clonarlos adentro.
+Requisitos: Git, Docker Desktop, Node 24 LTS. No hace falta Java ni Maven en el equipo (corren en Docker).
+
+```powershell
+git clone -b develop https://github.com/jhonnunez-svg/FCV_Proyecto_Citas_v1.git
+cd FCV_Proyecto_Citas_v1
+git clone -b develop https://github.com/jhonnunez-svg/citas-api.git
+git clone -b develop https://github.com/jhonnunez-svg/citas-web.git
+
+Copy-Item .env.example .env          # cambia JWT_ACCESS_SECRET por uno propio de 32+ caracteres
+Copy-Item citas-web\.env.example citas-web\.env
+docker compose up -d mysql
+docker compose run --rm citas-api-dev mvn -B test   # debe dar 33 tests en verde
+cd citas-web; npm install; npm run build; cd ..
+
+git config --global user.name "jhonnunez-svg"      # si el equipo no tiene identidad de git
+```
+
+Luego abre Claude Code en `FCV_Proyecto_Citas_v1` y di: *"Retoma S2 desde PLAN_RETOMA_S2.md"*.
+
 ## Repositorios
 
 | Repo | Remoto | Ramas |
