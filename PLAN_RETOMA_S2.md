@@ -28,9 +28,14 @@ El repo del trainer queda como remoto `upstream` en la raíz. **Nunca** hagas pu
 
 ## Pendiente, en este orden
 
-1. **Verificación independiente de HU-001..004.** Se lanzó un verificador y la sesión se cerró antes de su informe. Repetir:
-   agente `backend-verifier` sobre HU-001..004 → matriz PASS/FAIL/NO VERIFICABLE. Si todo PASS, `scrum-spec-writer` pasa las HU a `Completada` con la evidencia.
-2. **Ejecutar las pruebas uno mismo** antes de fiarse: `docker compose run --rm citas-api-dev mvn -B test` (desde la raíz).
+1. **Corregir lo que encontró la verificación independiente** (ya ejecutada: 33 tests en verde, backend sólido, pero **ninguna HU puede pasar a `Completada`**):
+   - **HU-003 FAIL real:** `citas-web` no renueva la sesión ante un 401 (CA-06). Implementar el refresh automático con un único refresh en vuelo (agente `frontend-api`).
+   - **HU-033 / trazabilidad (FAIL en las 4 DoD):** documentar el contrato REST (springdoc/OpenAPI o página `contrato-auth` en la wiki) y llenar las tablas de evidencia de las HU.
+   - **CA-08 de HU-001 NO VERIFICABLE:** probar las migraciones sobre una BD vacía. Idealmente, tests con BD propia de test (hoy escriben en `citas_fcv_training`).
+   - **Pruebas débiles:** `HexagonalArchitectureTest` solo usa regex de imports; `JwtSecretValidationTest` no prueba el arranque fallido; la expiración del refresh admite igualdad (HU-003 CA-01).
+   - Menores: `contracts.ts` trae `http://localhost:8080` como valor por defecto; el JWT lleva el claim `email`.
+   - Después, volver a lanzar `backend-verifier` y `frontend-verifier`, y solo entonces pasar las HU a `Completada`.
+2. **Probar las migraciones sobre una BD vacía** y volver a ejecutar `docker compose run --rm citas-api-dev mvn -B test`.
 3. **Prueba manual extremo a extremo:** levantar el backend (`docker compose run --rm --service-ports citas-api-dev mvn spring-boot:run`) y el frontend (`cd citas-web && npm run dev`), y hacer registro → login en el navegador.
 4. **AGENTS.md por repo** (S2 paso 2): `citas-api/AGENTS.md` con `prompts/agents/PROMPT_AGENT_CITAS_API.md` y `citas-web/AGENTS.md` con `PROMPT_AGENT_CITAS_WEB.md`. Borrar los `AGENTS.md.template`.
 5. **Stitch → AI Studio** (S2 paso 4, requiere a una persona): seguir `citas-web/docs/diseno/PROMPTS_STITCH.md` y `HANDOFF_AI_STUDIO.md`, aprobar el diseño e importar/reconciliar en `citas-web`.
