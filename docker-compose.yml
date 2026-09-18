@@ -45,11 +45,18 @@ services:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: ${MYSQL_DATABASE}
+      # Base propia de las pruebas de integracion, para que no escriban en la de desarrollo.
+      # Crearla con `.\scripts\init-test-db.ps1`.
+      DB_NAME_TEST: ${MYSQL_DATABASE}_test
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
 
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      # Sin estas tres, el contenedor caia en los valores por defecto de application.yml y el
+      # .env no tenia efecto alguno sobre la sesion ni sobre CORS.
+      JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-15}
+      JWT_REFRESH_DAYS: ${JWT_REFRESH_DAYS:-7}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
 
     ports:
       - "${API_PORT:-8080}:8080"
