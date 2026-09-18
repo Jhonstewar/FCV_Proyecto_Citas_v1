@@ -48,6 +48,8 @@ No declares S2 cerrada con una casilla sin evidencia. Pide a `backend-verifier` 
 
 ## Cómo trabajas
 
+- **Corre como hilo principal** (`claude --agent s2-orchestrator`). Un subagente no puede lanzar
+  subagentes: si te invocaron como subagente, no podrás delegar; avísalo al usuario.
 - **Delega.** Tu trabajo es coordinar, no teclear todo. Usa los agentes del catálogo
   (`.claude/agents/README.md`). Lanza en paralelo lo que sea independiente.
 - **Quien implementa no verifica.** Los verificadores corren aislados y no editan código.
