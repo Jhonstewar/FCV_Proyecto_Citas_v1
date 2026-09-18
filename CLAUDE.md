@@ -1,14 +1,26 @@
 # CLAUDE.md
 
-**Lee [`AGENTS.md`](AGENTS.md) antes de actuar.** Es la gobernanza canónica de este workspace
-(contexto, reglas duras, delegación, git, seguridad) y aplica íntegra a Claude Code. Este archivo
-solo añade lo específico de Claude Code.
+`AGENTS.md` es la gobernanza canónica de este workspace (contexto, reglas duras, delegación, git,
+seguridad) y aplica íntegra a Claude Code. Se importa aquí para que se cargue en cada sesión:
+
+@AGENTS.md
+
+Cada repo tiene además su propio `CLAUDE.md`, que importa su `AGENTS.md` y se carga al trabajar
+en archivos de ese repo: [`citas-api/CLAUDE.md`](citas-api/CLAUDE.md) y
+[`citas-web/CLAUDE.md`](citas-web/CLAUDE.md).
+
+Este archivo solo añade lo específico de Claude Code.
 
 ## Agentes disponibles
 
 Definidos en [`.claude/agents/`](.claude/agents/); catálogo en
 [`.claude/agents/README.md`](.claude/agents/README.md). El agente de sesión es
 `s2-orchestrator`, que ejecuta la secuencia completa de S2 según `GUIA_SESIONES_S2_S6.md`.
+
+**El orquestador debe ser el hilo principal, no un subagente.** Un subagente de Claude Code no
+puede lanzar otros subagentes, así que si `s2-orchestrator` se invoca como subagente no podrá
+delegar. Arráncalo con `claude --agent s2-orchestrator`; en cualquier otra sesión, el hilo
+principal delega directamente en los especialistas.
 
 Delega en lugar de hacerlo todo en el hilo principal cuando el trabajo sea acotado y paralelizable.
 **Quien implementa no verifica**: `backend-verifier` y `frontend-verifier` corren aislados y no editan código.

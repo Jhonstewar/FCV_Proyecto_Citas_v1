@@ -191,3 +191,63 @@ El frontend (`citas-web`, 74 pruebas con `fetch` simulado) usa las mismas rutas:
 `src/api/contracts.ts` con los `@*Mapping` del backend y coinciden todas. La única ausente del
 backend es `/api/auth/password-recovery` (RF-03, HU-006), que queda para S4. **No verificado:**
 la navegación real en el navegador (prueba manual con los tres roles, sección 9).
+
+## 9. Guía de prueba manual en el navegador (la ejecuta una persona)
+
+**Preparación (una vez):**
+
+```powershell
+cd "C:\Users\IA ACADEMY 7\Desktop\Jhon\FCV_Proyecto_Citas_v1"
+# .env de la raíz: ADMIN_BOOTSTRAP_EMAIL y ADMIN_BOOTSTRAP_PASSWORD con valores propios (D5)
+docker compose up -d mysql
+docker compose run --rm --service-ports citas-api-dev mvn spring-boot:run   # terminal 1, API en :8080
+cd citas-web; npm install; npm run dev                                      # terminal 2, http://localhost:5173
+node scripts/e2e-smoke.mjs      # opcional (terminal 3): crea profesionales, bloques y citas de demostración
+```
+
+Si ya había un backend corriendo desde antes de S3, hay que **pararlo y volver a arrancarlo**:
+`spring-boot:run` no recarga el código.
+
+| # | Rol | Pasos | Resultado esperado |
+|---|---|---|---|
+| 1 | ADMIN | Entrar con el correo de `ADMIN_BOOTSTRAP_EMAIL` | Panel con contadores; menú Solicitudes, Profesionales, Especialidades |
+| 2 | ADMIN | Especialidades → nueva "Cardiología", Especializada, 60 min | Aparece activa; Medicina General muestra "Protegida" |
+| 3 | ADMIN | Profesionales → nuevo, con Medicina General (primaria) y sede HIC, contraseña inicial | Aparece en la tabla, activo |
+| 4 | ADMIN | Otro profesional con Cardiología y sedes HIC e ICV | Idem |
+| 5 | PROFESSIONAL | Cerrar sesión y entrar como el médico general → Mi agenda → Nuevo bloque mañana 08:00–12:00 HIC | Bloque con 8 franjas libres |
+| 6 | PROFESSIONAL | Intentar otro bloque 11:30–13:00 el mismo día | Error "Se cruza con otro bloque" |
+| 7 | PROFESSIONAL | Entrar como la cardióloga y publicar un bloque 14:00–17:00 | 6 franjas |
+| 8 | USER | Registrarse como paciente nuevo y entrar | Inicio del paciente con "Agendar cita" |
+| 9 | USER | Agendar → Cita general → Medicina General → mañana → 09:00 → Confirmar | "¡Listo! Tu cita quedó confirmada" (Aprobada) |
+| 10 | USER | Agendar → Especializada → Cardiología → mañana → 14:00 | "Solicitud enviada", estado Solicitada |
+| 11 | USER | Mis citas | Dos citas: Aprobada y Solicitada |
+| 12 | ADMIN | Solicitudes → Rechazar la de 14:00 sin escribir motivo | No deja confirmar |
+| 13 | ADMIN | Rechazar con motivo "Agenda completa" | Sale de la bandeja con aviso |
+| 14 | USER | Mis citas → detalle de la rechazada | Estado Rechazada y el motivo; historial con 2 pasos |
+| 15 | PROFESSIONAL | Agenda de la cardióloga | Las franjas 14:00–15:00 vuelven a estar libres |
+| 16 | USER | Escribir a mano `/admin` en la URL | "Sin permiso", sin cerrar la sesión |
+
+Resultado de la prueba manual: _pendiente, lo registra el usuario._
+
+## 10. Verificación independiente (quien implementa no verifica)
+
+Dos agentes verificadores de **solo lectura**, sin haber escrito el código, revisaron HU por HU
+contra sus CA y DoD, con **prueba de mutación**. Luego se corrigió lo encontrado y se volvió a probar.
+
+| | Backend (`citas-api`) | Frontend (`citas-web`) |
+|---|---|---|
+| Suite al verificar | 210/210 | 74/74 + typecheck, lint y build |
+| Mutantes | 19: 13 muertos, 5 vivos, 1 equivalente | 11: 8 muertos, 3 vivos |
+| Hallazgos medios | F1 cambio de tipo de una especialidad en uso (solicitudes fuera de la bandeja) | F1 teléfono ausente rompe la edición, F2 "Cita cita general", F3 horas del historial fuera de UTC-5 |
+| Huecos frente a las HU | filtro "tipo de cita" (RF-10), catálogo de estados de reprogramación, nombre de especialidad único, dirección de HIC | — |
+| Corrección | `citas-api@2e1cfc5` | `citas-web@46b2db9` |
+| Suite tras corregir | **227/227** | **83/83** + typecheck, lint y build |
+| Mutantes re-ejecutados | M09, M10, M11, M13, M14 → **los 5 mueren** | M7 y M11 con prueba nueva |
+
+Cada arreglo del frontend (F1–F3) tiene una prueba que se vio fallar antes de corregirlo. En el
+backend, `VerificationGapsIntegrationTest` agrupa las 16 pruebas nuevas, entre ellas altas
+concurrentes de profesionales sin usuarios huérfanos (HU-013 CA-06).
+
+**Queda abierto a propósito (depende de S4 o de una decisión del usuario):** HU-005 CA-06 / RF-16
+(el profesional ve datos de sus pacientes, HU-020), reprogramaciones en la bandeja (HU-027/031),
+la cancelación (HU-026) y las decisiones D1–D14 tomadas bajo aprobación delegada.

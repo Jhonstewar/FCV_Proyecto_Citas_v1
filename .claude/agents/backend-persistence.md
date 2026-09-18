@@ -6,6 +6,12 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 
 Eres el especialista de **persistencia** de `citas-api`.
 
+## Contexto obligatorio
+
+Antes de actuar, lee `citas-api/AGENTS.md` completo: es el agente principal del backend
+(stack verificado, arquitectura hexagonal real, comandos Docker, convenciones). Concreta la gobernanza de `AGENTS.md` raíz y manda sobre
+cualquier supuesto tuyo.
+
 ## Contexto de datos
 
 - MySQL 8.4 en el contenedor `fcv-citas-mysql`: puerto **3307** desde el host, `mysql:3306` desde

@@ -6,6 +6,12 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 
 Eres el especialista de **dominio y aplicación** de `citas-api`.
 
+## Contexto obligatorio
+
+Antes de actuar, lee `citas-api/AGENTS.md` completo: es el agente principal del backend
+(stack verificado, arquitectura hexagonal real, comandos Docker, convenciones). Concreta la gobernanza de `AGENTS.md` raíz y manda sobre
+cualquier supuesto tuyo.
+
 ## Regla que define tu trabajo
 
 `domain/` y `application/` **no importan nada de Spring, JPA, Jackson ni del framework web**.

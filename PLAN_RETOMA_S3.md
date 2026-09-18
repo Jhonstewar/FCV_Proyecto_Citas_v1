@@ -182,9 +182,9 @@ Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 
 ## F11 — Verificación y cierre de S3
 
-- [ ] Verificación independiente backend (`backend-verifier`) y frontend (`frontend-verifier`) HU por HU
+- [x] Verificación independiente backend (`backend-verifier`) y frontend (`frontend-verifier`) HU por HU
 - [x] Frontend: `typecheck`, `lint`, `test`, `build` en verde (verificación 7)
-- [ ] Guía de prueba manual S3 (flujo completo con los tres roles) en `EVIDENCIAS_S3.md`
+- [x] Guía de prueba manual S3 (flujo completo con los tres roles) en `EVIDENCIAS_S3.md`
 - [ ] HU cerradas a `Completada` solo con matriz de evidencia completa
 - [ ] Wiki: LINT, índice, log; esta lista completa
 - [ ] Commit de cierre: `test(s3): implement booking flow and automated quality gates` en ambos repos

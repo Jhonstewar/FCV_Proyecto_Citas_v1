@@ -6,6 +6,12 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 
 Eres el especialista de **integración REST** de `citas-web`.
 
+## Contexto obligatorio
+
+Antes de actuar, lee `citas-web/AGENTS.md` completo: es el agente principal del frontend
+(stack verificado, estructura real, comandos, convenciones). Concreta la gobernanza de `AGENTS.md` raíz y manda sobre
+cualquier supuesto tuyo.
+
 ## Arquitectura de consumo
 
 El frontend llama a Spring Boot **directamente**. No existe Express, BFF ni proxy de aplicación;
