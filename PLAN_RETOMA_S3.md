@@ -108,9 +108,9 @@ TDD: cada caso de uso empieza con su prueba en rojo.
 
 ## F3 — Backend: profesionales · HU-013, HU-014, HU-015, HU-016
 
-- [ ] Alta atómica usuario + profesional con rol PROFESSIONAL (D6); duplicados → 409
-- [ ] Asignar especialidades con una sola primaria; asignar sedes
-- [ ] Activar/desactivar (D11); listado y detalle para ADMIN
+- [x] Alta atómica usuario + profesional con rol PROFESSIONAL (D6); duplicados → 409
+- [x] Asignar especialidades con una sola primaria; asignar sedes
+- [x] Activar/desactivar (D11); listado y detalle para ADMIN
 
 🔖 **PUNTO DE CONTROL F3** — commit citas-api: `feat(s3): gestión de profesionales`
 
@@ -199,3 +199,4 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · 🔖 F0 · raíz + citas-api (`docs(s3): …`)
 - 2026-09-18 · 🔖 F1 · raíz `996b33f`… · citas-api `4d4cb89`, `a97fd6a`, `062725b` · citas-web `df252ef`, `dd73877` · evidencia en `EVIDENCIAS_S3.md`
 - 2026-09-18 · 🔖 F2 · citas-api `fd83532` (130 pruebas en verde: 126 + 4 de D5) · raíz: compose/.env.example, evidencia Red→Green
+- 2026-09-18 · 🔖 F3 · citas-api `e3e920f` (149 pruebas en verde)
