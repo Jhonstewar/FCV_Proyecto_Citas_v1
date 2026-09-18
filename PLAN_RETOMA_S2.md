@@ -9,10 +9,10 @@ Los subrepos **no** vienen dentro del repo principal (están en su `.gitignore`)
 Requisitos: Git, Docker Desktop, Node 24 LTS. No hace falta Java ni Maven en el equipo (corren en Docker).
 
 ```powershell
-git clone -b develop https://github.com/jhonnunez-svg/FCV_Proyecto_Citas_v1.git
+git clone -b develop https://github.com/Jhonstewar/FCV_Proyecto_Citas_v1.git
 cd FCV_Proyecto_Citas_v1
-git clone -b develop https://github.com/jhonnunez-svg/citas-api.git
-git clone -b develop https://github.com/jhonnunez-svg/citas-web.git
+git clone -b develop https://github.com/Jhonstewar/citas-api.git
+git clone -b develop https://github.com/Jhonstewar/citas-web.git
 
 Copy-Item .env.example .env          # cambia JWT_ACCESS_SECRET por uno propio de 32+ caracteres
 Copy-Item citas-web\.env.example citas-web\.env
@@ -21,7 +21,7 @@ docker compose up -d mysql
 docker compose run --rm citas-api-dev mvn -B test   # debe dar 104 tests en verde
 cd citas-web; npm install; npm test; npm run build; cd ..   # 42 tests en verde
 
-git config --global user.name "jhonnunez-svg"      # si el equipo no tiene identidad de git
+git config --global user.name "Jhonstewar"      # si el equipo no tiene identidad de git
 ```
 
 Luego abre Claude Code en `FCV_Proyecto_Citas_v1` y di: *"Retoma S2 desde PLAN_RETOMA_S2.md"*.
@@ -30,9 +30,9 @@ Luego abre Claude Code en `FCV_Proyecto_Citas_v1` y di: *"Retoma S2 desde PLAN_R
 
 | Repo | Remoto | Ramas |
 |---|---|---|
-| Raíz (specs, agentes, infra) | `jhonnunez-svg/FCV_Proyecto_Citas_v1` | `main` (historial del trainer) · `develop` (trabajo S2) |
-| Backend | `jhonnunez-svg/citas-api` | `main` (commit inicial vacío) · `develop` (S2) |
-| Frontend | `jhonnunez-svg/citas-web` | `main` (commit inicial vacío) · `develop` (S2) |
+| Raíz (specs, agentes, infra) | `Jhonstewar/FCV_Proyecto_Citas_v1` | `main` (historial del trainer) · `develop` (trabajo S2) |
+| Backend | `Jhonstewar/citas-api` | `main` (S2 fusionado por PR #1) · `develop` (S2) |
+| Frontend | `Jhonstewar/citas-web` | `main` (S2 fusionado por PR #1) · `develop` (S2) |
 
 El repo del trainer queda como remoto `upstream` en la raíz. **Nunca** hagas push ahí.
 
@@ -59,7 +59,7 @@ El repo del trainer queda como remoto `upstream` en la raíz. **Nunca** hagas pu
 ## Pendiente, en este orden
 
 1. **Prueba manual extremo a extremo:** levantar el backend (`docker compose run --rm --service-ports citas-api-dev mvn spring-boot:run`) y el frontend (`cd citas-web && npm run dev`), y hacer registro → login → ver "Tu cuenta" → cerrar sesión en el navegador. Es lo único que los verificadores no pudieron comprobar (HU-002 CA-09 contra el backend real).
-2. **AGENTS.md por repo** (S2 paso 2): `citas-api/AGENTS.md` con `prompts/agents/PROMPT_AGENT_CITAS_API.md` y `citas-web/AGENTS.md` con `PROMPT_AGENT_CITAS_WEB.md`. Borrar los `AGENTS.md.template`.
+2. ~~**AGENTS.md por repo** (S2 paso 2)~~ — **hecho 2026-09-18**: `citas-api/AGENTS.md` y `citas-web/AGENTS.md` generados desde el código real; plantillas borradas. Revisar `citas-web/AGENTS.md` después del punto 3 (importación de AI Studio).
 3. **Stitch → AI Studio** (S2 paso 4, requiere a una persona): seguir `citas-web/docs/diseno/PROMPTS_STITCH.md` y `HANDOFF_AI_STUDIO.md`, aprobar el diseño e importar/reconciliar en `citas-web`.
 4. **Comparar el modelo 3FN propio con la referencia** `database/reference/db.sql` y registrar las diferencias en la wiki.
 5. **HU-033** (contrato REST) sigue en `Borrador`: el contrato existe, pero la HU no estaba en la aprobación delegada. Decide si la apruebas.

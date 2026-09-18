@@ -10,10 +10,10 @@ Carpeta orquestadora que contiene **dos repositorios Git independientes**:
 
 | Ruta | Repo | Stack |
 |---|---|---|
-| `citas-api/` | `jhonnunez-svg/citas-api` | Java 21 LTS · Spring Boot 3.5.x · Maven · hexagonal · Spring Data JPA · Flyway · MySQL 8.4 · Spring Security + JWT |
-| `citas-web/` | `jhonnunez-svg/citas-web` | Node 24 LTS · TypeScript · **React + Vite** · REST directo contra `citas-api` |
+| `citas-api/` | `Jhonstewar/citas-api` | Java 21 LTS · Spring Boot 3.5.x · Maven · hexagonal · Spring Data JPA · Flyway · MySQL 8.4 · Spring Security + JWT |
+| `citas-web/` | `Jhonstewar/citas-web` | Node 24 LTS · TypeScript · **React + Vite** · REST directo contra `citas-api` |
 
-La raíz es a su vez un repo (`jhonnunez-svg/FCV_Proyecto_Citas_v1`) que versiona PRD,
+La raíz es a su vez un repo (`Jhonstewar/FCV_Proyecto_Citas_v1`) que versiona PRD,
 restricciones, prompts, skills, scripts e infraestructura. **No** versiona código de aplicación.
 
 Dominio: agendamiento de citas **ficticio**. Sedes HIC e ICV son información pública; todo lo
