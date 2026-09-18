@@ -143,4 +143,6 @@ respondía 404 porque no había reglas por rol ni rutas. La única que pasaba
 equivocado → 403 con `title: "Acceso denegado"`; rol correcto → 200; ruta no declarada con ADMIN
 → 403 (denegación por defecto); catálogos para los tres roles; escritura sobre catálogos fijos → 405.
 
-_Slots 30/60 y doble reserva: pendiente de F4 y F5._
+**Slots 30/60 (verificación 4), F4:** `AvailabilityBlockTest` (dominio): 08:00–12:00 → 8 slots exactos; 14:00–17:00 → 6; horas fuera de la rejilla :00/:30 rechazadas; 60 min exige el slot siguiente dentro del mismo bloque (09:30 en un bloque que acaba a las 10:00 no aloja 60 min). `ScheduleIntegrationTest`: los 8 slots persisten con las mismas horas locales (lectura SQL cruda).
+
+_Doble reserva: pendiente de F5._

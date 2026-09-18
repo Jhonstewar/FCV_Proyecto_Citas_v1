@@ -116,10 +116,10 @@ TDD: cada caso de uso empieza con su prueba en rojo.
 
 ## F4 — Backend: agenda del profesional · HU-017, HU-018, HU-019
 
-- [ ] Crear bloque → slots de 30 min; sin pasado, sin solape, solo sedes asignadas, solo para sí mismo
-- [ ] Editar/eliminar bloques futuros sin reservas
-- [ ] Calendario del profesional por rango de fechas
-- [ ] **Pruebas de reglas de slots 30/60** (verificación 4): bloque 08:00–12:00 → 8 slots; bordes de la rejilla; 60 min exige 2 consecutivos del mismo bloque
+- [x] Crear bloque → slots de 30 min; sin pasado, sin solape, solo sedes asignadas, solo para sí mismo
+- [x] Editar/eliminar bloques futuros sin reservas
+- [x] Calendario del profesional por rango de fechas
+- [x] **Pruebas de reglas de slots 30/60** (verificación 4): bloque 08:00–12:00 → 8 slots; bordes de la rejilla; 60 min exige 2 consecutivos del mismo bloque
 
 🔖 **PUNTO DE CONTROL F4** — commit citas-api: `feat(s3): bloques de disponibilidad y slots`
 
@@ -200,3 +200,4 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · 🔖 F1 · raíz `996b33f`… · citas-api `4d4cb89`, `a97fd6a`, `062725b` · citas-web `df252ef`, `dd73877` · evidencia en `EVIDENCIAS_S3.md`
 - 2026-09-18 · 🔖 F2 · citas-api `fd83532` (130 pruebas en verde: 126 + 4 de D5) · raíz: compose/.env.example, evidencia Red→Green
 - 2026-09-18 · 🔖 F3 · citas-api `e3e920f` (149 pruebas en verde)
+- 2026-09-18 · 🔖 F4 · citas-api `1e15cd4` (170 pruebas en verde)
