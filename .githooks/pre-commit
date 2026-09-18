@@ -1,0 +1,5 @@
+#!/bin/sh
+# Hook pre-commit del repo raiz (S3). La raiz no tiene codigo de aplicacion: solo se escanean secretos.
+# Instalar: .\scripts\install-hooks.ps1   (configura core.hooksPath=.githooks)
+echo "[pre-commit] raiz: escaneo de secretos"
+node .githooks/secret-scan.mjs || exit 1
