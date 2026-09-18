@@ -95,14 +95,14 @@ Se construye **primero**, para que todo lo que sigue ya pase por ella.
 
 TDD: cada caso de uso empieza con su prueba en rojo.
 
-- [ ] **Demostración Red → Green** (verificación 2 y 3): primera prueba escrita antes del código, ejecutada en rojo, salida guardada en `EVIDENCIAS_S3.md`; luego verde
-- [ ] V5: historial sin `ON DELETE CASCADE`, origen `PROFESSIONAL` (D8)
-- [ ] V6: semilla `MEDICINA_GENERAL` (D7)
-- [ ] Autorización por rol: `/api/admin/**` → ADMIN, `/api/professional/**` → PROFESSIONAL, `/api/patient/**` → USER; denegación por defecto; 401 ≠ 403 (HU-005)
-- [ ] Bootstrap del primer ADMIN (D5) + variables en `.env.example` y `docker-compose.yml`
-- [ ] `GET /api/catalogs/{sites,appointment-types,appointment-statuses,document-types}` (HU-010)
-- [ ] CRUD de especialidades con duración 30/60, activar/desactivar, sin borrado físico si está referenciada (HU-011)
-- [ ] Pruebas de autorización básicas (verificación 6): anónimo → 401, rol equivocado → 403, rol correcto → 2xx
+- [x] **Demostración Red → Green** (verificación 2 y 3): primera prueba escrita antes del código, ejecutada en rojo, salida guardada en `EVIDENCIAS_S3.md`; luego verde
+- [x] V5: historial sin `ON DELETE CASCADE`, origen `PROFESSIONAL` (D8)
+- [x] V6: semilla `MEDICINA_GENERAL` (D7)
+- [x] Autorización por rol: `/api/admin/**` → ADMIN, `/api/professional/**` → PROFESSIONAL, `/api/patient/**` → USER; denegación por defecto; 401 ≠ 403 (HU-005)
+- [x] Bootstrap del primer ADMIN (D5) + variables en `.env.example` y `docker-compose.yml`
+- [x] `GET /api/catalogs/{sites,appointment-types,appointment-statuses,document-types}` (HU-010)
+- [x] CRUD de especialidades con duración 30/60, activar/desactivar, sin borrado físico si está referenciada (HU-011)
+- [x] Pruebas de autorización básicas (verificación 6): anónimo → 401, rol equivocado → 403, rol correcto → 2xx
 
 🔖 **PUNTO DE CONTROL F2** — commit citas-api: `feat(s3): autorización por rol, catálogos y especialidades`
 
@@ -176,7 +176,7 @@ Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 - [ ] Panel con contadores (solicitudes pendientes, profesionales activos)
 - [ ] Bandeja: aprobar / rechazar con motivo en modal
 - [ ] CRUD de profesionales (especialidades, primaria, sedes, activo)
-- [ ] CRUD de especialidades (duración 30/60, tipo, activa)
+- [x] CRUD de especialidades (duración 30/60, tipo, activa)
 
 🔖 **PUNTO DE CONTROL F10** — commit citas-web: `feat(s3): operación administrativa`
 
@@ -198,3 +198,4 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · plan creado
 - 2026-09-18 · 🔖 F0 · raíz + citas-api (`docs(s3): …`)
 - 2026-09-18 · 🔖 F1 · raíz `996b33f`… · citas-api `4d4cb89`, `a97fd6a`, `062725b` · citas-web `df252ef`, `dd73877` · evidencia en `EVIDENCIAS_S3.md`
+- 2026-09-18 · 🔖 F2 · citas-api `fd83532` (130 pruebas en verde: 126 + 4 de D5) · raíz: compose/.env.example, evidencia Red→Green

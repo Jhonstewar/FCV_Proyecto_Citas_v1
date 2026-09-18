@@ -106,8 +106,41 @@ El cambio se revirtió (`git checkout`); no llegó a ningún commit.
 
 ## 6. Red → Green (verificaciones 1, 2 y 3)
 
-_Pendiente: F2 del plan._
+**Prueba escrita antes del código:** `citas-api/src/test/java/com/fcv/citas/infrastructure/rest/AuthorizationIntegrationTest.java`
+(HU-005 y HU-010). Se ejecutó cuando aún no existían las reglas por rol ni los controladores de S3.
+
+**RED** (`mvn test -Dtest=AuthorizationIntegrationTest`, antes de implementar):
+
+```text
+[ERROR] Tests run: 10, Failures: 9, Errors: 0, Skipped: 0 <<< FAILURE! -- in ...AuthorizationIntegrationTest
+[ERROR] ...fixedCatalogsRejectWrites -- java.lang.AssertionError: Status expected:<405> but was:<404>
+[ERROR] ...onlyProfessionalReachesProfessionalRoutes -- java.lang.AssertionError: Status expected:<403> but was:<404>
+[ERROR] ...undeclaredRoutesAreDeniedEvenWhenAuthenticated -- java.lang.AssertionError: Status expected:<403> but was:<404>
+[ERROR] ...anyAuthenticatedRoleReadsCatalogs(String)[1] -- java.lang.AssertionError: Status expected:<200> but was:<404>
+[ERROR] ...onlyAdminReachesAdminRoutes -- ...
+```
+
+Falla por la razón correcta: toda ruta autenticada caía en `anyRequest().authenticated()` y
+respondía 404 porque no había reglas por rol ni rutas. La única que pasaba
+(`catalogsRequireAuthentication`) ya estaba cubierta por la seguridad de S2.
+
+**Implementación mínima:** reglas por prefijo y `denyAll` por defecto en `SecurityConfig`,
+`CatalogController`, `AdminSpecialtyController` y `PatientAppointmentController`.
+
+**GREEN** (suite completa, mismo día):
+
+```text
+[INFO] Tests run: 10, Failures: 0, Errors: 0 -- in ...AuthorizationIntegrationTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0 -- in ...SpecialtyAdminIntegrationTest
+[INFO] Tests run: 6,  Failures: 0, Errors: 0 -- in ...FlywayMigratesEmptySchemaTest
+[INFO] Tests run: 4,  Failures: 0, Errors: 0 -- in com.fcv.citas.HexagonalArchitectureTest
+[INFO] Tests run: 126, Failures: 0, Errors: 0, Skipped: 0
+```
 
 ## 7. Pruebas de slots 30/60, doble reserva y autorización (verificaciones 4, 5 y 6)
 
-_Pendiente: F2, F4 y F5 del plan._
+**Autorización (verificación 6), F2:** `AuthorizationIntegrationTest`: anónimo → 401; rol
+equivocado → 403 con `title: "Acceso denegado"`; rol correcto → 200; ruta no declarada con ADMIN
+→ 403 (denegación por defecto); catálogos para los tres roles; escritura sobre catálogos fijos → 405.
+
+_Slots 30/60 y doble reserva: pendiente de F4 y F5._
