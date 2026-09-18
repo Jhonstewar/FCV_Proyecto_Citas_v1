@@ -136,10 +136,10 @@ TDD: cada caso de uso empieza con su prueba en rojo.
 
 ## F6 — Backend: operación del ADMIN · HU-029, HU-030
 
-- [ ] Bandeja: `REQUESTED` con filtros sede, profesional, especialidad, fecha
-- [ ] Aprobar → `APPROVED`; rechazar con motivo obligatorio → `REJECTED` y libera slots; transiciones inválidas → 409; vencida → 409 (D12)
-- [ ] Decisiones concurrentes sobre la misma cita: una gana (bloqueo optimista o `SELECT … FOR UPDATE`)
-- [ ] Contrato REST documentado: `wiki/contrato-rest-citas.md` (HU-033)
+- [x] Bandeja: `REQUESTED` con filtros sede, profesional, especialidad, fecha
+- [x] Aprobar → `APPROVED`; rechazar con motivo obligatorio → `REJECTED` y libera slots; transiciones inválidas → 409; vencida → 409 (D12)
+- [x] Decisiones concurrentes sobre la misma cita: una gana (bloqueo optimista o `SELECT … FOR UPDATE`)
+- [x] Contrato REST documentado: `wiki/contrato-rest-citas.md` (HU-033)
 
 🔖 **PUNTO DE CONTROL F6** — commit citas-api: `feat(s3): bandeja y decisión administrativa`
 
@@ -147,35 +147,35 @@ TDD: cada caso de uso empieza con su prueba en rojo.
 
 Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 
-- [ ] Sistema visual ampliado en `tokens.css`: paleta, tipografía, espaciado, estados, modo oscuro
-- [ ] Layout con barra lateral según rol (USER / PROFESSIONAL / ADMIN) y cabecera con usuario y salir
-- [ ] Rutas protegidas por rol; 401 → login, 403 → pantalla "sin permiso" (HU-005 CA-08, CA-09)
-- [ ] Componentes: tarjeta, tabla, insignia de estado, modal de confirmación, estado vacío, esqueleto de carga, toast
-- [ ] `contracts.ts` ampliado con todos los endpoints de S3
+- [x] Sistema visual ampliado en `tokens.css`: paleta, tipografía, espaciado, estados, modo oscuro
+- [x] Layout con barra lateral según rol (USER / PROFESSIONAL / ADMIN) y cabecera con usuario y salir
+- [x] Rutas protegidas por rol; 401 → login, 403 → pantalla "sin permiso" (HU-005 CA-08, CA-09)
+- [x] Componentes: tarjeta, tabla, insignia de estado, modal de confirmación, estado vacío, esqueleto de carga, toast
+- [x] `contracts.ts` ampliado con todos los endpoints de S3
 
 🔖 **PUNTO DE CONTROL F7** — commit citas-web: `feat(s3): navegación por rol y sistema visual`
 
 ## F8 — Frontend: paciente
 
-- [ ] Inicio del paciente: próximas citas y acceso rápido a "Agendar"
-- [ ] Agendar en pasos: tipo → especialidad → sede → profesional → fecha → franja → confirmar
+- [x] Inicio del paciente: próximas citas y acceso rápido a "Agendar"
+- [x] Agendar en pasos: tipo → especialidad → sede → profesional → fecha → franja → confirmar
 - [x] Mis citas con filtros y detalle (motivo de rechazo visible)
-- [ ] Errores 409 (franja tomada) explicados y con reintento
+- [x] Errores 409 (franja tomada) explicados y con reintento
 
 🔖 **PUNTO DE CONTROL F8** — commit citas-web: `feat(s3): reserva de citas del paciente`
 
 ## F9 — Frontend: profesional
 
-- [ ] Calendario semanal de bloques con slots libres/ocupados
-- [ ] Crear, editar y eliminar bloques con validación y errores del backend
+- [x] Calendario semanal de bloques con slots libres/ocupados
+- [x] Crear, editar y eliminar bloques con validación y errores del backend
 
 🔖 **PUNTO DE CONTROL F9** — commit citas-web: `feat(s3): agenda del profesional`
 
 ## F10 — Frontend: administrador
 
-- [ ] Panel con contadores (solicitudes pendientes, profesionales activos)
-- [ ] Bandeja: aprobar / rechazar con motivo en modal
-- [ ] CRUD de profesionales (especialidades, primaria, sedes, activo)
+- [x] Panel con contadores (solicitudes pendientes, profesionales activos)
+- [x] Bandeja: aprobar / rechazar con motivo en modal
+- [x] CRUD de profesionales (especialidades, primaria, sedes, activo)
 - [x] CRUD de especialidades (duración 30/60, tipo, activa)
 
 🔖 **PUNTO DE CONTROL F10** — commit citas-web: `feat(s3): operación administrativa`
@@ -183,7 +183,7 @@ Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 ## F11 — Verificación y cierre de S3
 
 - [ ] Verificación independiente backend (`backend-verifier`) y frontend (`frontend-verifier`) HU por HU
-- [ ] Frontend: `typecheck`, `lint`, `test`, `build` en verde (verificación 7)
+- [x] Frontend: `typecheck`, `lint`, `test`, `build` en verde (verificación 7)
 - [ ] Guía de prueba manual S3 (flujo completo con los tres roles) en `EVIDENCIAS_S3.md`
 - [ ] HU cerradas a `Completada` solo con matriz de evidencia completa
 - [ ] Wiki: LINT, índice, log; esta lista completa
@@ -202,3 +202,6 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · 🔖 F3 · citas-api `e3e920f` (149 pruebas en verde)
 - 2026-09-18 · 🔖 F4 · citas-api `1e15cd4` (170 pruebas en verde)
 - 2026-09-18 · 🔖 F5 · citas-api `ba44d57` (199 pruebas en verde; doble reserva concurrente y prueba de mutación)
+- 2026-09-18 · 🔖 F6 · citas-api `9eb53d0` (210 pruebas en verde, dos ejecuciones; defecto de zona horaria corregido)
+- 2026-09-18 · 🔖 F7–F10 · citas-web `1c632cc`, `2b77905`, `7e0aaf8`, `4e572bf` (74 pruebas; typecheck, lint y build en verde; verificado por el orquestador)
+- 2026-09-18 · E2E por API contra el backend real: 29/29 (`scripts/e2e-smoke.mjs`, `EVIDENCIAS_S3.md` §8)

@@ -165,3 +165,29 @@ Se cambió `SlotReservationJpaEntity.isNew()` para devolver `false` (Spring Data
 - **Mutante eliminado** por `doubleBookingIsRejectedWith409`: con `merge`, la segunda reserva **sobrescribe** la fila ajena de `slot_reservations` y responde 201. Es una doble reserva real que la PK no impide, porque no hay INSERT.
 - La prueba concurrente **no** lo detecta: bajo carrera, `merge` termina en un INSERT duplicado que sí choca con la PK. Las dos pruebas son necesarias; cada una cubre un modo de fallo distinto.
 - El cambio se revirtió (`git diff` vacío) antes de seguir.
+
+## 8. Prueba de humo de extremo a extremo contra el backend real (contrato entre repos)
+
+`scripts/e2e-smoke.mjs` recorre el flujo de S3 por HTTP con los tres roles contra `citas-api`
+levantado con `spring-boot:run`, incluido el preflight CORS desde `http://localhost:5173`. Crea
+sus propios datos con una etiqueta aleatoria y no imprime contraseñas ni tokens.
+
+```text
+E2E S3 contra http://localhost:8081 (etiqueta 016bd6)
+0. Salud y CORS            ✔ health UP · ✔ preflight CORS desde http://localhost:5173
+1. ADMIN                   ✔ login del ADMIN inicial (D5) · ✔ HIC e ICV · ✔ Medicina General protegida
+                           ✔ especialidad 60 min · ✔ 45 min → 400 · ✔ 2 profesionales creados
+2. PROFESSIONAL            ✔ 08:00–12:00 → 8 slots · ✔ solape → 409 BLOCK_OVERLAP · ✔ bloque 14:00–17:00
+3. USER                    ✔ registro · ✔ 8 franjas de 30 min · ✔ general → APPROVED · ✔ repetida → 409 SLOT_TAKEN
+                           ✔ 60 min: 5 franjas, nunca 16:30 · ✔ flujo equivocado → 422 WRONG_FLOW
+                           ✔ especializada → REQUESTED (GOAL_02) · ✔ USER en ruta ADMIN → 403
+4. ADMIN decide            ✔ bandeja con 2 · ✔ aprobar · ✔ rechazar sin motivo → 400 · ✔ rechazar con motivo
+                           ✔ la franja rechazada vuelve a ofrecerse (RN-09)
+5. Consulta                ✔ mis citas: 3 · ✔ detalle con motivo e historial · ✔ agenda con 2 slots ocupados
+Resultado: 29 OK, 0 con fallo.
+```
+
+El frontend (`citas-web`, 74 pruebas con `fetch` simulado) usa las mismas rutas: se contrastó
+`src/api/contracts.ts` con los `@*Mapping` del backend y coinciden todas. La única ausente del
+backend es `/api/auth/password-recovery` (RF-03, HU-006), que queda para S4. **No verificado:**
+la navegación real en el navegador (prueba manual con los tres roles, sección 9).
