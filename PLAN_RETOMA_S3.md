@@ -125,12 +125,12 @@ TDD: cada caso de uso empieza con su prueba en rojo.
 
 ## F5 — Backend: reserva · HU-032, HU-022, HU-023, HU-024 (GOAL_02), HU-025
 
-- [ ] Modelo de dominio `Appointment` con transiciones explícitas (RN-11) y el historial en la misma transacción (HU-032)
-- [ ] Búsqueda de franjas: filtros sede, tipo, especialidad, profesional, fecha; 30 → 1 slot, 60 → 2 consecutivos; excluye retenidos y pasado
-- [ ] Cita general → `APPROVED` automáticamente, origen SYSTEM
-- [ ] Cita especializada → `REQUESTED`, slots retenidos, origen USER
-- [ ] **Prueba de doble reserva** (verificación 5): segunda reserva → 409; **concurrente** con dos hilos → exactamente una gana (lo garantiza la PK de `slot_reservations`)
-- [ ] Mis citas con filtros estado/fecha y detalle con motivo de rechazo (ownership: nunca las de otro)
+- [x] Modelo de dominio `Appointment` con transiciones explícitas (RN-11) y el historial en la misma transacción (HU-032)
+- [x] Búsqueda de franjas: filtros sede, tipo, especialidad, profesional, fecha; 30 → 1 slot, 60 → 2 consecutivos; excluye retenidos y pasado
+- [x] Cita general → `APPROVED` automáticamente, origen SYSTEM
+- [x] Cita especializada → `REQUESTED`, slots retenidos, origen USER
+- [x] **Prueba de doble reserva** (verificación 5): segunda reserva → 409; **concurrente** con dos hilos → exactamente una gana (lo garantiza la PK de `slot_reservations`)
+- [x] Mis citas con filtros estado/fecha y detalle con motivo de rechazo (ownership: nunca las de otro)
 
 🔖 **PUNTO DE CONTROL F5** — commit citas-api: `feat(s3): reserva de citas general y especializada`
 
@@ -159,7 +159,7 @@ Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 
 - [ ] Inicio del paciente: próximas citas y acceso rápido a "Agendar"
 - [ ] Agendar en pasos: tipo → especialidad → sede → profesional → fecha → franja → confirmar
-- [ ] Mis citas con filtros y detalle (motivo de rechazo visible)
+- [x] Mis citas con filtros y detalle (motivo de rechazo visible)
 - [ ] Errores 409 (franja tomada) explicados y con reintento
 
 🔖 **PUNTO DE CONTROL F8** — commit citas-web: `feat(s3): reserva de citas del paciente`
@@ -201,3 +201,4 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · 🔖 F2 · citas-api `fd83532` (130 pruebas en verde: 126 + 4 de D5) · raíz: compose/.env.example, evidencia Red→Green
 - 2026-09-18 · 🔖 F3 · citas-api `e3e920f` (149 pruebas en verde)
 - 2026-09-18 · 🔖 F4 · citas-api `1e15cd4` (170 pruebas en verde)
+- 2026-09-18 · 🔖 F5 · citas-api `ba44d57` (199 pruebas en verde; doble reserva concurrente y prueba de mutación)

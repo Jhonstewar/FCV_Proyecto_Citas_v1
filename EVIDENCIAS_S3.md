@@ -145,4 +145,23 @@ equivocado → 403 con `title: "Acceso denegado"`; rol correcto → 200; ruta no
 
 **Slots 30/60 (verificación 4), F4:** `AvailabilityBlockTest` (dominio): 08:00–12:00 → 8 slots exactos; 14:00–17:00 → 6; horas fuera de la rejilla :00/:30 rechazadas; 60 min exige el slot siguiente dentro del mismo bloque (09:30 en un bloque que acaba a las 10:00 no aloja 60 min). `ScheduleIntegrationTest`: los 8 slots persisten con las mismas horas locales (lectura SQL cruda).
 
-_Doble reserva: pendiente de F5._
+**Doble reserva (verificación 5), F5:** `BookingIntegrationTest`:
+
+- `doubleBookingIsRejectedWith409`: el mismo slot reservado dos veces → 409 `SLOT_TAKEN`; no queda una segunda cita ni una segunda fila de historial.
+- `concurrentBookingsOfTheSameSlotLetExactlyOneWin`: **8 hilos** confirman a la vez el mismo slot → exactamente **1 × 201 y 7 × 409**, una sola cita y una sola fila en `slot_reservations`. Se repitió 3 veces más de forma aislada, todas en verde.
+- `sixtyMinutesWithTakenSecondSlotRetainsNothing`: si el segundo slot de una cita de 60 min está tomado, el primero **no** queda retenido (la transacción se deshace entera).
+
+El caso de uso no comprueba antes si el slot está libre: la única barrera es la clave primaria `slot_id` de `slot_reservations` (dec-003). Por eso la prueba concurrente mide esa garantía y no una comprobación que una carrera podría saltarse.
+
+### Prueba de mutación de la doble reserva
+
+Se cambió `SlotReservationJpaEntity.isNew()` para devolver `false` (Spring Data hace `merge` en vez de `persist`) y se ejecutaron las dos pruebas de doble reserva:
+
+```text
+[ERROR] BookingIntegrationTest.doubleBookingIsRejectedWith409:153 Status expected:<409> but was:<201>
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
+```
+
+- **Mutante eliminado** por `doubleBookingIsRejectedWith409`: con `merge`, la segunda reserva **sobrescribe** la fila ajena de `slot_reservations` y responde 201. Es una doble reserva real que la PK no impide, porque no hay INSERT.
+- La prueba concurrente **no** lo detecta: bajo carrera, `merge` termina en un INSERT duplicado que sí choca con la PK. Las dos pruebas son necesarias; cada una cubre un modo de fallo distinto.
+- El cambio se revirtió (`git diff` vacío) antes de seguir.
