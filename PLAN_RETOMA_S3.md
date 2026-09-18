@@ -80,14 +80,14 @@ Detalle y alternativas en la wiki: `dec-004-decisiones-s3-reserva.md`.
 
 Se construye **primero**, para que todo lo que sigue ya pase por ella.
 
-- [ ] `scripts/secret-scan.mjs` (Node, sin dependencias): patrones de claves privadas, JWT, `AKIA…`, `ghp_…`, `password=`/`secret=` con valor literal, `.env` staged. Lista blanca para `.env.example` y el secreto ficticio de `application-test.yml`
-- [ ] `citas-api/.githooks/pre-commit`: escaneo de secretos + `mvn -B test` en Docker (si Docker no está, falla con mensaje claro)
-- [ ] `citas-web/.githooks/pre-commit`: escaneo de secretos + `typecheck` + `lint` + `test`
-- [ ] Raíz `.githooks/pre-commit`: escaneo de secretos
-- [ ] `scripts/install-hooks.ps1`: configura `core.hooksPath` en los tres repos
-- [ ] **Evidencia FAIL (secreto):** commit con secreto ficticio → bloqueado. Salida guardada en `EVIDENCIAS_S3.md`
-- [ ] **Evidencia FAIL (prueba roja):** commit con una prueba rota → bloqueado. Salida guardada
-- [ ] **Evidencia PASS:** se corrige y el commit pasa. Hash del commit permitido en `EVIDENCIAS_S3.md`
+- [x] `.githooks/secret-scan.mjs` (Node, sin dependencias): patrones de claves privadas, JWT, `AKIA…`, `ghp_…`, `password=`/`secret=` con valor literal, `.env` staged. Lista blanca para `.env.example` y el secreto ficticio de `application-test.yml`
+- [x] `citas-api/.githooks/pre-commit`: escaneo de secretos + `mvn -B test` en Docker (si Docker no está, falla con mensaje claro)
+- [x] `citas-web/.githooks/pre-commit`: escaneo de secretos + `typecheck` + `lint` + `test`
+- [x] Raíz `.githooks/pre-commit`: escaneo de secretos
+- [x] `scripts/install-hooks.ps1`: configura `core.hooksPath` en los tres repos
+- [x] **Evidencia FAIL (secreto):** commit con secreto ficticio → bloqueado. Salida guardada en `EVIDENCIAS_S3.md`
+- [x] **Evidencia FAIL (prueba roja):** commit con una prueba rota → bloqueado. Salida guardada
+- [x] **Evidencia PASS:** se corrige y el commit pasa. Hash del commit permitido en `EVIDENCIAS_S3.md`
 
 🔖 **PUNTO DE CONTROL F1** — commits: `chore(s3): hooks locales de secretos y pruebas` en los tres repos
 
@@ -197,3 +197,4 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 
 - 2026-09-18 · plan creado
 - 2026-09-18 · 🔖 F0 · raíz + citas-api (`docs(s3): …`)
+- 2026-09-18 · 🔖 F1 · raíz `996b33f`… · citas-api `4d4cb89`, `a97fd6a`, `062725b` · citas-web `df252ef`, `dd73877` · evidencia en `EVIDENCIAS_S3.md`
