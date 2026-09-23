@@ -185,9 +185,27 @@ Diseño propio (no hubo Stitch): limpio, clínico, en español, accesible.
 - [x] Verificación independiente backend (`backend-verifier`) y frontend (`frontend-verifier`) HU por HU
 - [x] Frontend: `typecheck`, `lint`, `test`, `build` en verde (verificación 7)
 - [x] Guía de prueba manual S3 (flujo completo con los tres roles) en `EVIDENCIAS_S3.md`
-- [ ] HU cerradas a `Completada` solo con matriz de evidencia completa
-- [ ] Wiki: LINT, índice, log; esta lista completa
-- [ ] Commit de cierre: `test(s3): implement booking flow and automated quality gates` en ambos repos
+- [x] HU cerradas a `Completada` solo con matriz de evidencia completa — **12 de 18**. Las 6 restantes quedan abiertas **a propósito**, con su causa en `citas-api/docs/wiki/scrum/README.md` §Cierre de S3: HU-005, HU-011, HU-016, HU-022, HU-029 y HU-033 (esta última por diseño, es artefacto vivo)
+- [x] Wiki: LINT ejecutado (12 de 14 páginas saneadas), `index.md` reescrito con cifras vigentes y `log.md` al día
+- [x] Commit de cierre en ambos repos. El mensaje va en español, como exige `AGENTS.md` §8; el texto original del brief (`test(s3): implement booking flow and automated quality gates`) queda citado en el cuerpo del commit
+
+### Qué queda abierto al cerrar S3, y por qué
+
+No es deuda escondida: son criterios que **no se pueden cumplir hoy** porque dependen de HU
+posteriores, más tres defectos de especificación que salieron al exigir evidencia.
+
+| HU | Falta |
+|---|---|
+| HU-005 | El profesional no tiene endpoint para ver datos de sus pacientes (llega con HU-020), y el ownership está reimplementado en tres sitios en vez de en un componente reutilizable |
+| HU-011 | `specialties` **no tiene restricción única sobre `name`**: solo hay `uq_specialties_code`, y la unicidad del nombre vive únicamente en `ManageSpecialtiesUseCase`. Necesita una migración posterior a V7 |
+| HU-016 | Activar/desactivar **no es una operación del dominio**: `Professional` no tiene `activate()` ni `deactivate()` y se pasa por el puerto genérico `ProfessionalRepository#setActive`, justo lo que su DoD descarta. Y no hay prueba de que desactivar conserve las citas existentes |
+| HU-022 | Depende de retenciones por reprogramación, que no tienen productor. Y la consecutividad de 60 min está escrita **dos veces**: en `AvailabilityBlock#canHost`, que usa la reserva, y en el SQL de `JdbcAvailabilityQueries`, que usa la búsqueda |
+| HU-029 | Toda la mitad de reprogramaciones, por lo mismo. Además hay una decisión de producto pendiente: los filtros de fecha y sede de una reprogramación, ¿miran la franja actual o la propuesta? |
+| HU-033 | Abierta por diseño (CA-08): es artefacto vivo y crece con cada endpoint |
+
+Riesgo anotado y no bloqueante: `appointments` no tiene restricción que obligue a una cita a tener filas
+en `slot_reservations`. El motor garantiza que una franja no se ocupe dos veces; que toda cita
+ocupe la suya lo garantiza que hoy existe un único camino de alta (`BookAppointmentUseCase#book`).
 
 🔖 **PUNTO DE CONTROL F11** — push de `develop` de los tres repos (con confirmación del usuario)
 
@@ -205,3 +223,9 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-18 · 🔖 F6 · citas-api `9eb53d0` (210 pruebas en verde, dos ejecuciones; defecto de zona horaria corregido)
 - 2026-09-18 · 🔖 F7–F10 · citas-web `1c632cc`, `2b77905`, `7e0aaf8`, `4e572bf` (74 pruebas; typecheck, lint y build en verde; verificado por el orquestador)
 - 2026-09-18 · E2E por API contra el backend real: 29/29 (`scripts/e2e-smoke.mjs`, `EVIDENCIAS_S3.md` §8)
+- 2026-09-23 · **desbloqueo de entorno**: los contenedores en marcha eran de otra copia del laboratorio (`DocumentsFCV_DES_ANDcitas`, en S2) porque compartían `COMPOSE_PROJECT_NAME` y `container_name`. Este workspace pasa a proyecto `fcv-citas-v1` con puertos propios (3308 / 8081 / 5174). Raíz `dafb0fa`, citas-web `3a8cae7`
+- 2026-09-23 · rediseño del frontend con el diseño aprobado de Stitch: citas-web `08cbe02` y `07eaa05` (corrección de paleta). Fuentes autoalojadas, logo propio, marco de autenticación partido
+- 2026-09-23 · semilla del laboratorio: tres profesionales con contraseña conocida, especialidades Cardiología y Pediatría, y 60 bloques de disponibilidad. EPS y planes ficticios por `scripts/seed-eps-plans.ps1` (raíz `beb1e87`)
+- 2026-09-23 · **HU-009 primer corte** (afiliación opcional al registrarse, fuera del alcance original de S3): citas-api `e61ab9b`, citas-web `712c6bc`. Aprobación directa del usuario
+- 2026-09-23 · **goal de no-doble-reserva: PASS**. Verificación independiente de los cuatro puntos, más dos huecos de evidencia cerrados (el `code` del 409 bajo concurrencia y la carrera cruzada general ↔ especializada que exige la DoD de HU-024). citas-api `39eab83`, evidencia en `EVIDENCIAS_S3.md` §11
+- 2026-09-23 · suites: backend **242** (eran 210 al cerrar F6), frontend **88** (eran 74)
