@@ -30,7 +30,11 @@ $testDb = "${db}_test"
 Write-Host "Esperando MySQL..." -ForegroundColor Cyan
 $healthy = $false
 for ($i = 0; $i -lt 30; $i++) {
-  $status = docker inspect --format '{{.State.Health.Status}}' fcv-citas-mysql
+  # El id sale de compose y no de un nombre fijo: el contenedor se llama segun el proyecto
+  # (`fcv-citas-v1-mysql` en este workspace) y un nombre a mano se desactualiza.
+  $mysqlId = docker compose ps -q mysql
+  if (-not $mysqlId) { Start-Sleep -Seconds 2; continue }
+  $status = docker inspect --format '{{.State.Health.Status}}' $mysqlId
   if ($status -eq 'healthy') { $healthy = $true; break }
   Start-Sleep -Seconds 2
 }

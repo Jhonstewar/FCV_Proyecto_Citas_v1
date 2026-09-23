@@ -1,8 +1,14 @@
+# Nombre del proyecto Docker. Es lo que separa este workspace de cualquier otra copia del
+# laboratorio en la misma máquina: sin él, dos carpetas con los mismos container_name se
+# pisan entre sí y manda la última que hizo `docker compose up`.
+# COMPOSE_PROJECT_NAME del .env tiene prioridad sobre esto, así que debe valer lo mismo.
+name: fcv-citas-v1
+
 services:
 
   mysql:
     image: mysql:8.4
-    container_name: fcv-citas-mysql
+    container_name: fcv-citas-v1-mysql
     restart: unless-stopped
 
     environment:
@@ -13,7 +19,7 @@ services:
       TZ: America/Bogota
 
     ports:
-      - "${MYSQL_PORT:-3307}:3306"
+      - "${MYSQL_PORT:-3308}:3306"
 
     volumes:
       - mysql_data:/var/lib/mysql
@@ -32,7 +38,7 @@ services:
 
   citas-api-dev:
     image: maven:3.9-eclipse-temurin-21
-    container_name: fcv-citas-api-dev
+    container_name: fcv-citas-v1-api-dev
     restart: unless-stopped
 
     working_dir: /workspace
@@ -62,7 +68,7 @@ services:
       ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
 
     ports:
-      - "${API_PORT:-8080}:8080"
+      - "${API_PORT:-8081}:8080"
 
     depends_on:
       mysql:
@@ -76,7 +82,7 @@ services:
 
   citas-web-dev:
     image: node:24-alpine
-    container_name: fcv-citas-web-dev
+    container_name: fcv-citas-v1-web-dev
     restart: unless-stopped
 
     working_dir: /workspace
@@ -86,8 +92,8 @@ services:
       - node_cache:/root/.npm
 
     ports:
-      - "${REACT_PORT:-5173}:5173"
-      - "${ANGULAR_PORT:-4200}:4200"
+      - "${REACT_PORT:-5175}:5173"
+      - "${ANGULAR_PORT:-4201}:4200"
 
     depends_on:
       - citas-api-dev

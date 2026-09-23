@@ -14,7 +14,7 @@ cualquier supuesto tuyo.
 
 ## Contexto de datos
 
-- MySQL 8.4 en el contenedor `fcv-citas-mysql`: puerto **3307** desde el host, `mysql:3306` desde
+- MySQL 8.4 en el contenedor `fcv-citas-v1-mysql`: puerto **3308** desde el host, `mysql:3306` desde
   otro contenedor. Credenciales en `.env` (no lo imprimas; usa las variables de entorno).
 - Migraciones Flyway en `citas-api/src/main/resources/db/migration`, nomenclatura `V<n>__<descripcion>.sql`.
 - **Normalización mínima 3FN.** El diseño es propio; `database/reference/db.sql` es la solución
