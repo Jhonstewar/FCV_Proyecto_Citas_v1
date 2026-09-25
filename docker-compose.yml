@@ -63,6 +63,11 @@ services:
       JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-15}
       JWT_REFRESH_DAYS: ${JWT_REFRESH_DAYS:-7}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
+      # D36: atributo Secure de la cookie del refresh token (localhost la acepta sin HTTPS).
+      REFRESH_COOKIE_SECURE: ${REFRESH_COOKIE_SECURE:-true}
+      # Recuperacion de contraseña (D27): vigencia del token y exposicion SOLO de laboratorio.
+      PASSWORD_RESET_MINUTES: ${PASSWORD_RESET_MINUTES:-30}
+      PASSWORD_RESET_EXPOSE_TOKEN: ${PASSWORD_RESET_EXPOSE_TOKEN:-false}
       # Primer ADMIN (decision D5, S3): vacios = no se crea ninguno.
       ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
       ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}

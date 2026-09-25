@@ -1,0 +1,60 @@
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.aFailureHoldingTheSlotRollsBackTheRequest -- Time elapsed: 0.316 s <<< FAILURE!
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.ownershipAndRoleAreEnforced -- Time elapsed: 0.303 s <<< FAILURE!
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.missingFieldsAndLongReasonsAreValidationErrors -- Time elapsed: 0.302 s <<< FAILURE!
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.aTakenOrRetainedSlotCannotBeProposed -- Time elapsed: 0.374 s <<< FAILURE!
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.onlyOneUndecidedRequestPerAppointment -- Time elapsed: 0.297 s <<< FAILURE!
+[ERROR] com.fcv.citas.infrastructure.rest.RescheduleRequestIntegrationTest.heldSlotsAreNeitherOfferedNorBookable -- Time elapsed: 0.379 s <<< FAILURE!
+[ERROR] Failures: 
+[ERROR]   FlywayMigratesEmptySchemaTest.aplicaTodasLasMigracionesEnOrden:99 
+[ERROR]   FlywayMigratesEmptySchemaTest.laReprogramacionGuardaLaFranjaAnteriorYLaSedePropuesta:255 [falta la columna previous_date] 
+[ERROR]   RescheduleDecisionIntegrationTest.aFailureDuringApprovalRollsBackEverything:668->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.aPendingRequestOnANonApprovedAppointmentCannotBeDecided:470->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.anAlreadyDecidedRequestCannotBeDecidedAgain:450->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.anUnknownRequestIsNotFound:484 No value at JSON path "$.code"
+[ERROR]   RescheduleDecisionIntegrationTest.anotherPatientCannotSeeTheRejection:419->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.approvalAndCancellationRacingEndInACoherentState:567->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.approvingMovesTheSameAppointmentAndConvertsTheHeldRows:222->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.approvingNeverOpensAGapOnTheNewSlot:623->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.approvingThirtyMinutesToAnotherSiteMovesTheSite:289->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.cancellingAfterARejectionReleasesTheOriginalSlot:375->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.cancellingWithAPendingRequestClosesItWithTheAutomaticReason:737->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.concurrentDecisionsLetExactlyOneWin:543->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.eachDecisionIsRecordedOnceInTheHistory:499->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.inboxFiltersApplyToTheProposedSlotAndCombine:811->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.onlyAdminDecides:685->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.rejectingKeepsTheAppointmentAndReleasesTheProposal:316->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.rejectingThirtyMinutesReleasesTheHeldSlot:361->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.rejectingWithoutAReasonIsAValidationError:433->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleDecisionIntegrationTest.theInboxListsPendingReschedulesWithBothSlots:763->reschedule:156 Status expected:<201> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aFailureHoldingTheSlotRollsBackTheRequest:548 Status expected:<500> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aProposalOverlappingTheCurrentSlotIsRejected:425 Status expected:<422> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aProposedSlotInThePastIsRejected:376 Status expected:<422> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aRequestAndABookingRacingForTheSameSlotLetExactlyOneWin:587 
+[ERROR]   RescheduleRequestIntegrationTest.aSiteWhereTheProfessionalDoesNotWorkIsRejected:276 Status expected:<422> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aTakenOrRetainedSlotCannotBeProposed:449 Status expected:<409> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.aValidRequestIsPendingAndHoldsBothSlotsAtOnce:197 Status expected:<201> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.changingProfessionalOrSpecialtyIsRejectedAsANewAppointment:291 Status expected:<422> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.heldSlotsAreNeitherOfferedNorBookable:348 Status expected:<201> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.missingFieldsAndLongReasonsAreValidationErrors:522 Status expected:<400> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.onlyAnApprovedFutureAppointmentAdmitsARequest:318 Status expected:<409> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.onlyOneUndecidedRequestPerAppointment:476 Status expected:<201> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.ownershipAndRoleAreEnforced:506 No value at JSON path "$.code"
+[ERROR]   RescheduleRequestIntegrationTest.sixtyMinutesNeedsTwoConsecutiveFreeSlots:392 Status expected:<422> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.theProposedSlotMayBeInAnotherSiteOfTheSameProfessional:264 Status expected:<201> but was:<404>
+[ERROR]   RescheduleRequestIntegrationTest.theSameSlotIsRejected:435 Status expected:<422> but was:<404>
+[ERROR] Errors: 
+[ERROR]   RescheduleDecisionIntegrationTest.aPastAppointmentWithARejectedRescheduleCannotBeCancelled:401 » BadSqlGrammar PreparedStatementCallback; bad SQL grammar [INSERT INTO reschedule_requests (appointment_id, status_id, requested_by_user_id,
+[ERROR]   RescheduleDecisionIntegrationTest.aRequestWhoseProposedSlotAlreadyPassedCannotBeApproved:707 » BadSqlGrammar PreparedStatementCallback; bad SQL grammar [INSERT INTO reschedule_requests (appointment_id, status_id, requested_by_user_id,
+[ERROR]   RescheduleDecisionIntegrationTest.theSummaryCountsPendingReschedules:840 NullPointer Cannot invoke "com.fasterxml.jackson.databind.JsonNode.asLong()" because the return value of "com.fasterxml.jackson.databind.JsonNode.get(String)" is null
+[ERROR] Tests run: 49, Failures: 37, Errors: 3, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project citas-api: There are test failures.
+[ERROR] 
+[ERROR] See /workspace/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

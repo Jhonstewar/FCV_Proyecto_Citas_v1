@@ -1,0 +1,16 @@
+{
+  "goal": "corregir exclusivamente el defecto de doble reserva de slots",
+  "loop": "LOOP_01_GUIADO_SIMPLE",
+  "iteration": 0,
+  "phase": "setup",
+  "note": "Defecto sembrado de forma controlada y declarada: SlotReservationJpaEntity#isNew() pasa de 'return true' a 'return slotId == null'. Spring Data hace merge en vez de persist y una segunda reserva sobrescribe la fila ajena.",
+  "backendTests": "fail",
+  "failing": [
+    "BookingIntegrationTest.doubleBookingIsRejectedWith409 (esperado 409, fue 201)",
+    "BookingIntegrationTest.sixtyMinutesWithTakenSecondSlotRetainsNothing (esperado 409, fue 201)",
+    "BookingIntegrationTest.specializedRequestRetainsTwoConsecutiveSlots (esperado 409, fue 201)"
+  ],
+  "evidence": "iter-0-red.log",
+  "budget": 3,
+  "result": "RED_CONFIRMED"
+}

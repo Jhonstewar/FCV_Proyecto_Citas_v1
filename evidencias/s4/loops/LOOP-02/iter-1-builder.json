@@ -1,0 +1,20 @@
+{
+  "goal": "reschedule appointment (HU-027, HU-031, HU-028, HU-029 reprogramaciones, HU-022 CA-03)",
+  "loop": "LOOP_02_GUIADO_AVANZADO",
+  "iteration": 1,
+  "budget": 4,
+  "builder": "completed",
+  "builderAgent": "claude (backend; el frontend ya estaba construido contra el contrato)",
+  "escalation": "none (migracion V10 prevista en D31; sin dependencias nuevas)",
+  "migration": "V10__reschedule_previous_slot.sql",
+  "redPhase": "37 fallos + 3 errores de 49 pruebas nuevas antes de implementar (iter-1-red.txt)",
+  "backendTests": "pass",
+  "backendTestsDetail": "471/471; clases concurrentes repetidas 2 veces, 51/51 cada vez",
+  "contractDeviations": 7,
+  "builderRisks": [
+    "Cerrar la atencion con una reprogramacion PENDING deja la franja propuesta retenida sin salida -> resuelto como D38 (provisional) para la iteracion 2",
+    "Aprobar solo revalida la hora (D23), no profesional/especialidad desactivados",
+    "Posible interbloqueo cruzado -> 409 CONCURRENT_CHANGE, no observado"
+  ],
+  "verifier": "pending"
+}
