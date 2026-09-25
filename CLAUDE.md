@@ -50,7 +50,7 @@ persistirse.
 - **Java 21 y Maven solo dentro de Docker.** El JDK del host es 26 y no cumple la restricción:
   `docker compose run --rm citas-api-dev mvn ...`
 - Node 24 y npm sí están disponibles en el host para `citas-web`.
-- MySQL 8.4 corre en el contenedor `fcv-citas-mysql`, expuesto en el puerto **3307** del host
+- MySQL 8.4 corre en el contenedor `fcv-citas-v1-mysql`, expuesto en el puerto **3308** del host
   (3306 dentro de la red de Docker). Desde el backend en contenedor: `mysql:3306`.
 - `.env` de la raíz ya existe y está en `.gitignore`. No lo leas ni lo imprimas.
 

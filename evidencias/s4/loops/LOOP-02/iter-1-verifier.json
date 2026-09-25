@@ -1,0 +1,15 @@
+{
+  "loop": "LOOP_02_GUIADO_AVANZADO",
+  "iteration": 1,
+  "frontendVerifier": "PASS",
+  "frontendBuild": "pass",
+  "frontendDetail": "typecheck 0, lint 0, test 212/212, build OK; contrato coincide con las desviaciones de F5",
+  "frontendObservations": [
+    "Rechazar una reprogramacion deja en el historial 'Aprobada - Motivo: <rechazo>' (D22 literal) -> resuelto como D39",
+    "Aviso de rechazo en cita ya empezada promete 'cancelarla' sin boton",
+    "Tipo AdminAppointment exige cancellable/reschedulable que el backend no emite"
+  ],
+  "backendVerifier": "INTERRUMPIDO (el usuario pauso la sesion); se repite al retomar",
+  "result": "ITERATION_2_REQUIRED",
+  "iteration2Feedback": ["D38: cerrar atencion cancela la reprogramacion PENDING y libera retencion", "D39: solo la aprobacion escribe historial; HistoryEntry.event='RESCHEDULED'; UI rotula 'Reprogramada'", "Frontend: texto del aviso de rechazo sin cancelar; tipo AdminAppointment sin cancellable/reschedulable"]
+}

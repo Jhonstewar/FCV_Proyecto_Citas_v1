@@ -251,3 +251,108 @@ concurrentes de profesionales sin usuarios huérfanos (HU-013 CA-06).
 **Queda abierto a propósito (depende de S4 o de una decisión del usuario):** HU-005 CA-06 / RF-16
 (el profesional ve datos de sus pacientes, HU-020), reprogramaciones en la bandeja (HU-027/031),
 la cancelación (HU-026) y las decisiones D1–D14 tomadas bajo aprobación delegada.
+
+## 11. Doble reserva verificada contra la API real (goal de no-doble-reserva)
+
+Ejecutado el **2026-09-23** contra el backend levantado en `localhost:8081`, con los datos del
+laboratorio sembrados. No sustituye a las pruebas de integración de la sección 7: las complementa,
+porque aquí hablan dos clientes HTTP distintos contra un Tomcat real y una MySQL real.
+
+**Montaje:** dos pacientes recién registrados (`ana.*` y `beto.*`), y las dos peticiones lanzadas
+sin esperar a la primera (`Promise.all`), de modo que compiten de verdad por la misma franja.
+
+### Intento por intento
+
+| Caso | Franja | Intento de `ana` | Intento de `beto` | Resultado |
+|---|---|---|---|---|
+| 1 · general, concurrente | 2026-09-24 08:00, Carolina Vargas @ HIC | **409** `SLOT_TAKEN` | **201** cita 6 `APPROVED` | 1 ganador, 1 rechazo |
+| 2 · reintento secuencial | la misma franja ya tomada | — | **409** `SLOT_TAKEN` | la franja no se puede volver a reservar |
+| 3 · especializada 60 min, concurrente | 2026-09-26 15:00 (2 slots) | **409** `SLOT_TAKEN` | **201** cita 9 `REQUESTED` | 1 solicitud, retiene 2 slots |
+
+El cuerpo del 409 es el esperado: `SLOT_TAKEN` con el detalle
+*"Esa franja ya no está disponible: otra persona la reservó"*.
+
+### Estado de la base después
+
+```sql
+SELECT COUNT(*) FROM (
+  SELECT slot_id FROM slot_reservations
+  GROUP BY slot_id HAVING COUNT(DISTINCT appointment_id) > 1
+) x;
+-- 0
+```
+
+| Cita | Estado | Franja | Slots retenidos |
+|---|---|---|---|
+| 1 | `APPROVED` | 2026-09-26 09:00–09:30 | 1 |
+| 3 | `APPROVED` | 2026-09-26 14:00–15:00 | 2 |
+| 4 | `REJECTED` | 2026-09-26 15:00–16:00 | **0** (el rechazo liberó los slots, RN-09) |
+| 5 | `APPROVED` | 2026-09-26 10:00–10:30 | 1 |
+| 6 | `APPROVED` | 2026-09-24 08:00–08:30 | 1 |
+| 9 | `REQUESTED` | 2026-09-26 15:00–16:00 | 2 |
+
+La cita 9 retiene los dos slots que la 4 liberó al ser rechazada: la franja volvió a ofrecerse y
+se pudo tomar de nuevo, que es exactamente lo que exige RN-09.
+
+### Qué lo garantiza
+
+La garantía última **no** es del código de aplicación, es del motor:
+
+```sql
+CREATE TABLE `slot_reservations` (
+  `slot_id` bigint NOT NULL,
+  ...
+  PRIMARY KEY (`slot_id`),
+  ...
+) COMMENT='Ocupacion de slots. La PK sobre slot_id impide la doble reserva (RN-01).'
+```
+
+Con `slot_id` como clave primaria, dos citas sobre el mismo slot son **imposibles de insertar**,
+gane quien gane la carrera. El `SELECT … FOR UPDATE` sobre los bloques del profesional y la
+transacción reducen la ventana de carrera y hacen que el caso perdedor sea limpio; la PK es la
+red que no se puede saltar. Ver [[dec-003-libro-unico-slot-reservations]].
+
+### Huecos de evidencia cerrados el 2026-09-23
+
+La verificación independiente dio PASS pero señaló dos puntos sin respaldo. Se cerraron **sin
+tocar una sola línea de `src/main`**: el comportamiento ya era correcto, lo que faltaba era
+afirmarlo.
+
+**1. La prueba concurrente no fijaba el código de error.** `concurrentBookingsOfTheSameSlotLetExactlyOneWin`
+afirmaba 1 × 201 y 7 × 409, pero solo el status. Como hay **dos** caminos que producen 409
+—`SLOT_TAKEN` desde el `catch` del adaptador y `CONCURRENT_CHANGE` desde la red de seguridad de
+`GlobalExceptionHandler`— la prueba pasaba con cualquiera de los dos. Ahora extrae el `code` del
+cuerpo real y exige que los 7 perdedores lleven `SLOT_TAKEN`.
+
+**2. Faltaba la concurrencia cruzada general ↔ especializada**, que la DoD de HU-024 exige por
+escrito. El fixture no lo permitía: cada profesional tenía un solo tipo de especialidad, así que
+los dos flujos nunca podían disputarse un slot. La prueba nueva
+`concurrentGeneralAndSpecializedOnTheSameSlotLetExactlyOneWin` monta un profesional con **las dos
+especialidades, ambas de 30 min**, para que cada una ocupe exactamente el mismo slot, y lanza
+`/general` y `/specialized` a la vez desde dos pacientes distintos.
+
+Esa prueba **no asume quién gana**: ramifica según el ganador leído de la base y afirma
+`APPROVED` + historial `SYSTEM` sin actor si gana el general, o `REQUESTED` + historial `USER`
+con el paciente como actor si gana el especializado.
+
+Y no era una precaución teórica. En tres ejecuciones seguidas ganó el general dos veces y el
+especializado una:
+
+| Ejecución | Carrera de 8 (general) | Carrera cruzada |
+|---|---|---|
+| 1 | 1×201 + 7×409, los 7 `SLOT_TAKEN` | gana **general** |
+| 2 | 1×201 + 7×409, los 7 `SLOT_TAKEN` | gana **especializado** |
+| 3 | 1×201 + 7×409, los 7 `SLOT_TAKEN` | gana **general** |
+
+Escrita asumiendo un ganador fijo, habría sido intermitente desde el primer día.
+
+**Por qué `SLOT_TAKEN` es determinista y no aleatorio:** el caso de uso serializa a los
+contendientes con `SELECT … FOR UPDATE` sobre la fila del profesional antes de resolver slots, así
+que el `INSERT` duplicado falla **dentro** de la transacción y lo traduce el adaptador. La red de
+`CONCURRENT_CHANGE` solo cubriría una violación que escapara al commit, y por diseño aquí no
+ocurre. Cero apariciones de `CONCURRENT_CHANGE` en 21 perdedores de la carrera de 8 más 3 de la
+cruzada.
+
+**Resultado:** suite de **242** pruebas en verde (antes 241), `BookingIntegrationTest` de 14 a 15.
+Reverificado de forma independiente: `andExpect` 61 → 61 y `assertThat` 18 → 27, es decir, ninguna
+aserción previa se debilitó, solo se sumaron.

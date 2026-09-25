@@ -1,0 +1,23 @@
+{
+  "goal": "corregir exclusivamente el defecto de doble reserva de slots",
+  "loop": "LOOP_01_GUIADO_SIMPLE",
+  "iteration": 1,
+  "builder": "completed",
+  "builderAgent": "backend-persistence",
+  "rootCause": "SlotReservationJpaEntity#isNew() devolvia slotId == null, siempre falso con id asignado: Spring Data hacia merge (SELECT + UPDATE de la fila ajena) en vez de persist (INSERT que choca con la PK)",
+  "change": "SlotReservationJpaEntity.java:54  return slotId == null;  ->  return true;  (git diff -- src/ vacio: identico a HEAD)",
+  "backendTests": "pass",
+  "backendTestsDetail": "Booking* 15/15, AdminDecision* 11/11, VerificationGaps* 16/16 = 42/42",
+  "frontendBuild": "n/a",
+  "verifier": "PASS",
+  "verifierAgent": "backend-verifier (aislado, ejecuto las pruebas por su cuenta)",
+  "verifierFindings": [
+    "Las dos pruebas concurrentes PASAN con el defecto puesto: en carrera ninguno de los SELECT del merge ve la fila y la PK choca igual. Solo las 3 secuenciales detectan la regresion.",
+    "Ninguna prueba unitaria fija el contrato isNew() == true.",
+    "La matriz de HU-023 dice 'BookingIntegrationTest (17 pruebas)'; la ejecucion real da 15."
+  ],
+  "followUp": "F2: prueba unitaria que fije SlotReservationJpaEntity#isNew() == true; corregir el conteo de la matriz de HU-023 en F10",
+  "result": "COMPLETED",
+  "iterationsUsed": 1,
+  "budget": 3
+}

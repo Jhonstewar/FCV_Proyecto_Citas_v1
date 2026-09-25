@@ -1,5 +1,24 @@
 # Guía de inicialización del entorno Docker — Proyecto FCV Citas
 
+
+> [!IMPORTANT]
+> **Este workspace usa nombres y puertos propios.** Se cambiaron el 2026-09-23 porque existe otra
+> copia del laboratorio en la misma maquina (`DocumentsFCV_DES_ANDcitas`) que compartia el
+> mismo `COMPOSE_PROJECT_NAME` y los mismos `container_name`: Docker las trataba como el mismo
+> proyecto y mandaba la ultima carpeta que hizo `docker compose up`, asi que el backend que
+> respondia en el puerto no era el de este repo.
+>
+> | | Valor generico de esta guia | Valor de este workspace |
+> |---|---|---|
+> | Proyecto Docker | `fcv-citas-training` | `fcv-citas-v1` |
+> | Contenedores | `fcv-citas-mysql`, `fcv-citas-api-dev`, `fcv-citas-web-dev` | los mismos con el prefijo `fcv-citas-v1-` |
+> | MySQL (host) | 3307 | **3308** |
+> | API (host) | 8080 | **8081** |
+> | Vite / Angular (host) | 5173 / 4200 | **5174 / 4201** |
+>
+> Dentro de la red de Docker nada cambia: MySQL sigue en `mysql:3306` y la API escucha en 8080.
+> Los ejemplos de mas abajo conservan los valores genericos; traduce con esta tabla.
+
 ## Objetivo
 
 Esta guía explica cómo inicializar y comprobar el entorno Docker del proyecto de agendamiento de citas usando los archivos ya preparados:
