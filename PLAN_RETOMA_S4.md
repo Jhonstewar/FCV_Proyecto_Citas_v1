@@ -371,10 +371,10 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 
 ## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
-Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. Estado: todo lo de abajo compila y sus suites estaban en
-verde el 2026-09-25 (backend 471, frontend 212); **esas cifras no se han vuelto a comprobar**.
-Antes de nada, arranca Docker Desktop y reejecuta ambas suites: sin Docker no hay backend, ni
-Maven, ni pruebas. Falta, en este orden:
+Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Base reconfirmada el 2026-09-30 en la máquina de
+escritorio:** backend **471/471** (`BUILD SUCCESS`, 3:21 min, MySQL real en Docker) y frontend
+**212/212** con typecheck, `oxlint` y build limpios. Las cifras del 2026-09-25 se sostienen.
+Si retomas en otro equipo, lee antes "Retomar en un clon que ya existe" (abajo). Falta, en este orden:
 
 1. **LOOP_02, iteración 2** (presupuesto: quedan 3). Feedback para el Builder, ya decidido en
    `dec-006`:
@@ -399,3 +399,32 @@ Maven, ni pruebas. Falta, en este orden:
 **Para probar recuperación de contraseña en el laboratorio:** añade
 `PASSWORD_RESET_EXPOSE_TOKEN=true` al `.env` de la raíz y recrea el contenedor
 (`docker compose up -d citas-api-dev`). Por defecto está apagado (D27).
+
+## Retomar en un clon que ya existe (comprobado el 2026-09-30)
+
+La sección "Retomar en otro equipo" de `PLAN_RETOMA_S2.md` cubre un **clon nuevo**. Cuando el clon ya
+existe y solo se hace `git pull`, hay cuatro cosas que no se arreglan solas. Salieron todas al
+retomar S4 en la máquina de escritorio:
+
+1. **`npm ci` en `citas-web`, siempre.** S4 añadió `lucide-react` como dependencia. Con el
+   `node_modules` viejo, `npm run typecheck` da `TS2307: Cannot find module 'lucide-react'` y 12 de
+   los 20 ficheros de prueba fallan al transformar. No es un fallo de código: son dependencias
+   desfasadas.
+2. **El `.env` de la raíz no viaja en git** (está en `.gitignore`, y así debe seguir), así que
+   `dafb0fa` no lo actualizó. Si `COMPOSE_PROJECT_NAME` sigue valiendo `fcv-citas-training`, los
+   volúmenes se crean como `fcv-citas-training_*` y se comparten con cualquier otra copia del
+   laboratorio — justo lo que `dafb0fa` quería evitar. Compruébalo sin abrir el `.env`:
+   `docker compose ls` debe decir `fcv-citas-v1`, y `docker port fcv-citas-v1-mysql` debe dar
+   **3308**. Si dicen `fcv-citas-training` y 3307, alinea `COMPOSE_PROJECT_NAME`, `MYSQL_PORT` y
+   `API_PORT` con `.env.example`.
+3. **`.\scripts\init-test-db.ps1` antes de la suite de backend.** Crea `citas_fcv_training_test`, la
+   base aislada de las pruebas de integración. Sin ella las pruebas escriben en la base de
+   desarrollo (el motivo está en el encabezado del script).
+4. **Node 24 LTS de verdad.** Con Node 22.19 `npm ci` avisa
+   `EBADENGINE react-router@8.4.0 required: { node: '>=22.22.0' }`. La suite pasa igual, pero el
+   aviso es real y `AGENTS.md` pide Node 24.
+
+Orden que funciona: `git pull` en los tres repos → arrancar Docker Desktop →
+`docker compose up -d mysql` → `.\scripts\init-test-db.ps1` →
+`docker compose run --rm citas-api-dev mvn -B test` → en `citas-web`, `npm ci` y luego `npm run
+typecheck`, `npm run lint`, `npm run test`, `npm run build`.
