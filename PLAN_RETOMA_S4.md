@@ -176,6 +176,21 @@ refresh (S4 de la síntesis: pregunta abierta, no se toca sin decisión).
 El orden sigue las dependencias de las HU: la máquina de estados y la cancelación van antes que
 la reprogramación porque HU-028 reutiliza la cancelación y D18 cruza ambas.
 
+> **Casillas saneadas el 2026-09-30, al bajar los commits de S4 a otra máquina.** Este archivo se
+> escribió de una sola vez (`bc13adc`) y sus casillas habían quedado mal **en los dos sentidos**:
+>
+> - **F10 estaba marcada entera y no se ejecutó.** Ninguna HU pasó a `Completada` en S4 (siguen las
+>   mismas 16 que al empezar), `EVIDENCIAS_S4.md` solo tiene la §1 de LOOP_01, no hay entrada `lint`
+>   posterior al 2026-09-23 en `wiki/log.md` y `datos-modelo-3fn.md` sigue diciendo que la
+>   comparación contra `database/reference/` está pendiente. Desmarcadas todas menos el push y el
+>   merge a `main`, que sí ocurrieron.
+> - **F4, F6 y F7 estaban sin marcar y su código sí está escrito**, como decía el Registro de
+>   avance. Verificado endpoint por endpoint y ruta por ruta (ver cada fase). Marcadas.
+>
+> **Lo que una casilla `[x]` significa aquí:** el código existe y su suite estaba en verde el
+> 2026-09-25. **No** significa HU verificada ni cerrada: eso es F10, y F10 no ha corrido. Las 11 HU
+> de S4 siguen en `Aprobada`. Si este archivo vuelve a contradecirse, manda **"▶ Dónde retomar"**.
+
 ### F0 — Preparación y especificación
 
 - [x] Decisiones D15–D30 respondidas (2026-09-25: D15, D18, D19 por el usuario; resto provisional bajo delegación) y D30 resuelta tras analizar las pantallas
@@ -221,10 +236,10 @@ se reintroduce de forma controlada y **declarada** en una rama temporal.
 
 ### F4 — Agenda del profesional y cierre de atención (HU-020, HU-021)
 
-- [ ] `GET /api/professional/appointments?date|week&siteId` solo `APPROVED` propias, con los campos mínimos del paciente que permite RF-16 (decidir y justificar la proyección en el contrato)
-- [ ] `POST /api/professional/appointments/{id}/complete` y `/no-show` con la regla D19 en un único punto, historial origen `PROFESSIONAL`, atómico (CA-08)
-- [ ] Frontend: lista de citas del día/semana en `AgendaPage` (o pestaña nueva), acciones de cierre con confirmación; tests
-- [ ] Cierra HU-005 CA-06 (el profesional ve solo datos de sus pacientes)
+- [x] `GET /api/professional/appointments?date|week&siteId` solo `APPROVED` propias, con los campos mínimos del paciente que permite RF-16 (decidir y justificar la proyección en el contrato) — `ProfessionalAppointmentController:29`
+- [x] `POST /api/professional/appointments/{id}/complete` y `/no-show` con la regla D19 en un único punto, historial origen `PROFESSIONAL`, atómico (CA-08) — `ProfessionalAppointmentController:61,67`
+- [x] Frontend: lista de citas del día/semana en `AgendaPage` (o pestaña nueva), acciones de cierre con confirmación; tests — pestañas "Bloques"/"Citas" en `AgendaPage.tsx:246,249`
+- [ ] Cierra HU-005 CA-06 (el profesional ve solo datos de sus pacientes) — pendiente: HU-005 sigue `En validación`, se cierra en F10
 
 🔖 **F4** — citas-api `feat(s4): agenda de citas y cierre de atención`; citas-web ídem
 
@@ -240,34 +255,50 @@ está `PENDING`; la franja nueva queda retenida; `APPROVED` libera la antigua y 
 retención en ocupación **sin abrir hueco** (se actualiza `reservation_type`, no se borra y se
 reinserta); `REJECTED` libera la retención y conserva la cita; solo ADMIN decide.
 
-- [ ] Iteración de dominio: agregado `RescheduleRequest` con aprobar/rechazar; regla de 60 min **reutilizada**, no reescrita
-- [ ] `POST /api/patient/appointments/{id}/reschedule` (HU-027) + prueba de concurrencia contra una reserva normal por la misma franja
-- [ ] Bandeja con `type: 'RESCHEDULE_REQUEST'` y filtros según D24 (HU-029); `POST /api/admin/reschedules/{id}/approve|reject` (HU-031) con historial según D22 y CA-07 (decisión concurrente / cancelación simultánea)
-- [ ] Detalle de la cita con la última reprogramación y su motivo; opciones "conservar" (sin escritura) y "cancelar" (reutiliza F3) (HU-028)
-- [ ] Búsqueda de disponibilidad excluye franjas retenidas por reprogramación (HU-022 CA-03)
-- [ ] Frontend: `/paciente/citas/:id/reprogramar`, bandeja admin de reprogramaciones, aviso de rechazo
-- [ ] Log por iteración en `evidencias/s4/loops/LOOP-02/`
+> **LOOP_02 cerrado el 2026-09-30 en 3 iteraciones de 4.** Backend **484/484**, frontend **218/218**,
+> los dos Verifier reejecutaron las suites ellos mismos. El `backend-verifier` dio **PASS al
+> comportamiento** —43 criterios con evidencia— y **FAIL a la DoD** por documentos desalineados; la
+> iteración 3 cerró ese FAIL. Detalle en `evidencias/s4/loops/LOOP-02/iter-2-verifier.json`.
+
+- [x] Iteración de dominio: agregado `RescheduleRequest` con aprobar/rechazar; regla de 60 min **reutilizada**, no reescrita
+- [x] `POST /api/patient/appointments/{id}/reschedule` (HU-027) + prueba de concurrencia contra una reserva normal por la misma franja — `RescheduleRequestIntegrationTest:559`
+- [x] Bandeja con `type: 'RESCHEDULE_REQUEST'` y filtros según D24 (HU-029); `POST /api/admin/reschedules/{id}/approve|reject` (HU-031) con historial según **D39, que refina D22**, y CA-07 (decisión concurrente / cancelación simultánea) — `RescheduleDecisionIntegrationTest:577,603,799,848`
+- [x] Detalle de la cita con la última reprogramación y su motivo; opciones "conservar" (sin escritura) y "cancelar" (reutiliza F3) (HU-028)
+- [x] Búsqueda de disponibilidad excluye franjas retenidas por reprogramación (HU-022 CA-03) — `RescheduleRequestIntegrationTest:342`
+- [x] Frontend: `/paciente/citas/:id/reprogramar`, bandeja admin de reprogramaciones, aviso de rechazo
+- [x] Log por iteración en `evidencias/s4/loops/LOOP-02/` — iteraciones 1, 2 y 3, con fase roja y veredicto de los dos Verifier
+
+**Los dos riesgos del §5 quedaron descartados con prueba, no con argumento:** aprobar actualiza la
+reserva **en sitio** (`created_at` conservado; dos reservas concurrentes contra la franja nueva
+reciben 409) y el libro de slots sigue teniendo **tres** tenedores, verificado por inventario.
+
+**Lo que el loop enseñó, y no sale en las cifras:** el Verifier encontró que la *razón escrita* de
+por qué la derivación de D39 es segura era **falsa**, aunque la conclusión fuera correcta. Al
+simular la violación, `HistoryEventTest` y `HexagonalArchitectureTest` **seguían en verde**: la
+suite entera pasaba con la mentira dentro. Se cerró con dos pruebas nuevas (`HistoryRowInvariantTest`
+por reflexión, `HistoryWritersArchitectureTest` sobre bytecode). Una prueba verde no dice que el
+razonamiento sea correcto; solo dice que ese camino no se rompió.
 
 🔖 **F5** — citas-api `feat(s4): reprogramación con retención y decisión administrativa`; citas-web ídem; raíz: logs
 
 ### F6 — Catálogos EPS y planes, perfil y afiliación (HU-012, HU-008, HU-009)
 
-- [ ] Dominio y casos de uso de EPS y plan (crear, editar, activar/desactivar, borrar según D28); desactivar una EPS retira su oferta sin tocar afiliaciones (CA-05)
-- [ ] `/api/admin/eps` y `/api/admin/eps/{id}/plans`; pantalla `/admin/eps`
-- [ ] `PUT /api/me` con los campos de D25; `GET/PUT/DELETE /api/me/affiliation` con D26; `SecurityConfig` actualizado
-- [ ] Pantalla `/perfil` (paciente) con datos editables y afiliación
+- [x] Dominio y casos de uso de EPS y plan (crear, editar, activar/desactivar, borrar según D28); desactivar una EPS retira su oferta sin tocar afiliaciones (CA-05) — migración `V9__eps_names_and_affiliation_history.sql`
+- [x] `/api/admin/eps` y `/api/admin/eps/{id}/plans`; pantalla `/admin/eps` — `AdminEpsController:26-27`, `EpsPage.tsx`
+- [x] `PUT /api/me` con los campos de D25; `GET/PUT/DELETE /api/me/affiliation` con D26; `SecurityConfig` actualizado — `MeController:89,96,102`, `SecurityConfig:88`
+- [x] Pantalla `/perfil` (paciente) con datos editables y afiliación — `App.tsx:74`
 - [ ] Revisar si `scripts/seed-eps-plans.ps1` sigue siendo necesario o queda como semilla de laboratorio
 
 🔖 **F6** — citas-api `feat(s4): EPS y planes, perfil y afiliación`; citas-web ídem
 
 ### F7 — Recuperación de contraseña (HU-006, HU-007)
 
-- [ ] Dominio del token (un solo uso, vigencia); reutiliza `SecureTokenGenerator` y el hash SHA-256; la tabla ya existe desde V1 (CA-08 de HU-006 se cumple con V1; se deja citado)
-- [ ] `POST /api/auth/password-recovery` (respuesta idéntica exista o no el email) y `POST /api/auth/password-reset` (token en el cuerpo, nunca en la ruta); exposición del token según D27
-- [ ] Al restablecer: token consumido, **refresh tokens del usuario revocados**, contraseña anterior deja de servir
-- [ ] Política de contraseña D29 en el servidor
-- [ ] Frontend: corregir la "ruta supuesta" de `contracts.ts`; paso 2 `/restablecer-password`
-- [ ] Prueba de que ni el token ni la contraseña aparecen en logs (HU-007 CA-09)
+- [x] Dominio del token (un solo uso, vigencia); reutiliza `SecureTokenGenerator` y el hash SHA-256; la tabla ya existe desde V1 (CA-08 de HU-006 se cumple con V1; se deja citado) — `domain/auth/PasswordResetToken.java`, `PasswordResetTokenRepository.java`
+- [x] `POST /api/auth/password-recovery` (respuesta idéntica exista o no el email) y `POST /api/auth/password-reset` (token en el cuerpo, nunca en la ruta); exposición del token según D27 — `PasswordRecoveryController:66,73`, `SecurityConfig:38`, `LabPasswordResetNotifier`
+- [x] Al restablecer: token consumido, **refresh tokens del usuario revocados**, contraseña anterior deja de servir — `ResetPasswordUseCase:70` (`RefreshToken.REASON_PASSWORD_RESET`)
+- [x] Política de contraseña D29 en el servidor — `validation/PasswordPolicyCompliant.java`, `domain/.../PasswordPolicy` + `PasswordPolicyTest`
+- [x] Frontend: corregir la "ruta supuesta" de `contracts.ts`; paso 2 `/restablecer-password` — `contracts.ts:65,67`, `App.tsx:47`
+- [x] Prueba de que ni el token ni la contraseña aparecen en logs (HU-007 CA-09) — `AuthFlowIntegrationTest:81` con `OutputCaptureExtension`/`CapturedOutput`
 
 🔖 **F7** — citas-api `feat(s4): recuperación de contraseña sin SMTP`; citas-web ídem
 
@@ -317,13 +348,13 @@ Alternativa: reconciliar contrato frontend ↔ backend hasta que `scripts/e2e-sm
 
 ### F10 — Verificación, deuda de S2 y cierre
 
-- [x] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3
-- [x] HU a `Completada` solo con matriz completa; las que no, quedan abiertas con su causa
-- [x] Comparación del modelo 3FN propio contra `database/reference/` → wiki `datos-modelo-3fn`
-- [x] Guía de prueba manual en navegador con los tres roles (`EVIDENCIAS_S4.md`), incluido el pendiente de S2
-- [x] Wiki: LINT, `index.md`, `log.md`
-- [x] Commit de cierre en los tres repos (el texto sugerido de la guía, `feat(s4): complete appointment lifecycle with autonomous verification loops`, citado en el cuerpo; el mensaje en español)
-- [x] **Decisión del usuario:** push y merge `develop → main`
+- [ ] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3 — **parcial**: F5 verificó HU-027, HU-028 y HU-031 (y de paso HU-021, HU-022 CA-03 y HU-029 por el backend). Quedan **8 HU en `Aprobada` que nunca ha visto un verificador**: HU-006, HU-007, HU-008, HU-009, HU-012, HU-020, HU-021, HU-026
+- [ ] HU a `Completada` solo con matriz completa; las que no, quedan abiertas con su causa — **cero HU cerradas en S4 todavía**. Hay **8 en `En validación`** esperando cierre: HU-005, HU-011, HU-016, HU-022 y HU-029 (deuda de S3) + HU-027, HU-028 y HU-031 (de F5). A todas les falta la verificación de frontend criterio a criterio y la prueba manual en navegador
+- [ ] Comparación del modelo 3FN propio contra `database/reference/` → wiki `datos-modelo-3fn` — `datos-modelo-3fn.md:17-20` sigue diciendo que está pendiente desde S2
+- [ ] Guía de prueba manual en navegador con los tres roles (`EVIDENCIAS_S4.md`), incluido el pendiente de S2 — `EVIDENCIAS_S4.md` solo tiene la §1 de LOOP_01
+- [ ] Wiki: LINT, `index.md`, `log.md` — `index.md` y `log.md` sí actualizados el 2026-09-30; **falta el LINT** (la última entrada `lint` es del 2026-09-23)
+- [ ] Commit de cierre en los tres repos (el texto sugerido de la guía, `feat(s4): complete appointment lifecycle with autonomous verification loops`, citado en el cuerpo; el mensaje en español) — los commits del 2026-09-25 son de pausa, no de cierre
+- [x] **Decisión del usuario:** push y merge `develop → main` — hecho el 2026-09-25 (PR #3: `0ae5184` raíz, `016baae` citas-api). Se hizo **antes** de F5/F8/F9/F10, así que `main` lleva S4 a medio verificar; el usuario lo aceptó así el 2026-09-30 (pregunta abierta R2)
 
 🔖 **F10** — push de `develop` (con confirmación) y, si se decide, merge a `main`
 
@@ -348,23 +379,17 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-25 · F2+F3 backend (290 pruebas) · frontend de S4 completo contra el contrato (168 pruebas) · LOOP_01 PASS en 1 iteración · sin commits por indicación del usuario
 - 2026-09-25 · F4, F6, F7 (backend 422 → 471 con F5), D36 cookie verificada contra la API real, menú lateral arreglado, hardening de frontend (212 pruebas). LOOP_02 iteración 1: Builder completed; Verifier frontend PASS; Verifier backend interrumpido por pausa del usuario
 - 2026-09-25 · 🔖 **pausa pedida por el usuario**: commits de S4 en `develop` de los tres repos
+- 2026-09-30 · S4 retomada en **otra máquina**: bajados 16 commits en la raíz, 28 en citas-api y 14 en citas-web desde `origin/develop` (fast-forward, los tres repos limpios). Saneadas las casillas de F4, F6, F7 y F10 contra el código real (§4). Wiki actualizada con el estado real. Decidido por el usuario: `main` se queda como está (R2)
+- 2026-09-30 · 🔖 **F5 cerrada. LOOP_02 PASS en 3 iteraciones de 4.** Backend 484/484 y frontend 218/218, con los dos Verifier reejecutando las suites. Iteración 2: D38 y D39 implementados, `frontend-verifier` PASS y `backend-verifier` PASS al comportamiento / FAIL a la DoD. Iteración 3: contrato REST, HU-031, HU-032 y EP-008 alineados, y el invariante de D39 protegido con dos pruebas nuevas. HU-027, HU-028 y HU-031 pasan a `En validación` con matriz de evidencia; **ninguna a `Completada`**, porque les faltan criterios de frontend y la prueba manual de F10. Commits en los tres repos, subidos a `origin`
 
-## ▶ Dónde retomar (escrito al pausar el 2026-09-25)
+## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
-Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. Estado: todo lo de abajo compila y sus suites están en
-verde (backend 471, frontend 212). Falta, en este orden:
+Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Estado al 2026-09-30, todo verificado en esta máquina:**
+backend **484/484** y frontend **218/218**, con typecheck, `oxlint` y build limpios. **F5 cerrada**
+(LOOP_02 PASS en 3 iteraciones). Si retomas en otro equipo, lee antes "Retomar en un clon que ya
+existe" (abajo). Falta, en este orden:
 
-1. **LOOP_02, iteración 2** (presupuesto: quedan 3). Feedback para el Builder, ya decidido en
-   `dec-006`:
-   - **D38:** cerrar como `COMPLETED`/`NO_SHOW` cancela la reprogramación `PENDING` y libera su
-     retención.
-   - **D39:** solo la aprobación escribe historial; se añade `HistoryEntry.event = 'RESCHEDULED'`
-     y la UI la rotula "Reprogramada".
-   - **Frontend:** el aviso de rechazo no debe ofrecer "cancelar" si la cita ya empezó; quitar
-     `cancellable`/`reschedulable` del tipo `AdminAppointment`.
-   - Después, los dos Verifier otra vez. El de backend quedó interrumpido: hay que ejecutarlo
-     entero. Logs en `evidencias/s4/loops/LOOP-02/`.
-2. **F8 · LOOP_03** "una regla, un sitio" (§4 F8).
+1. **F8 · LOOP_03** "una regla, un sitio" (§4 F8).
 3. **F9 pendiente:** ampliar `scripts/e2e-smoke.mjs` (cancelar, reprogramar aprobar y rechazar,
    cierre, recuperación, EPS) y ejecutarlo contra la API real. Actualizar `contrato-rest-*` con
    el corte final.
@@ -377,3 +402,32 @@ verde (backend 471, frontend 212). Falta, en este orden:
 **Para probar recuperación de contraseña en el laboratorio:** añade
 `PASSWORD_RESET_EXPOSE_TOKEN=true` al `.env` de la raíz y recrea el contenedor
 (`docker compose up -d citas-api-dev`). Por defecto está apagado (D27).
+
+## Retomar en un clon que ya existe (comprobado el 2026-09-30)
+
+La sección "Retomar en otro equipo" de `PLAN_RETOMA_S2.md` cubre un **clon nuevo**. Cuando el clon ya
+existe y solo se hace `git pull`, hay cuatro cosas que no se arreglan solas. Salieron todas al
+retomar S4 en la máquina de escritorio:
+
+1. **`npm ci` en `citas-web`, siempre.** S4 añadió `lucide-react` como dependencia. Con el
+   `node_modules` viejo, `npm run typecheck` da `TS2307: Cannot find module 'lucide-react'` y 12 de
+   los 20 ficheros de prueba fallan al transformar. No es un fallo de código: son dependencias
+   desfasadas.
+2. **El `.env` de la raíz no viaja en git** (está en `.gitignore`, y así debe seguir), así que
+   `dafb0fa` no lo actualizó. Si `COMPOSE_PROJECT_NAME` sigue valiendo `fcv-citas-training`, los
+   volúmenes se crean como `fcv-citas-training_*` y se comparten con cualquier otra copia del
+   laboratorio — justo lo que `dafb0fa` quería evitar. Compruébalo sin abrir el `.env`:
+   `docker compose ls` debe decir `fcv-citas-v1`, y `docker port fcv-citas-v1-mysql` debe dar
+   **3308**. Si dicen `fcv-citas-training` y 3307, alinea `COMPOSE_PROJECT_NAME`, `MYSQL_PORT` y
+   `API_PORT` con `.env.example`.
+3. **`.\scripts\init-test-db.ps1` antes de la suite de backend.** Crea `citas_fcv_training_test`, la
+   base aislada de las pruebas de integración. Sin ella las pruebas escriben en la base de
+   desarrollo (el motivo está en el encabezado del script).
+4. **Node 24 LTS de verdad.** Con Node 22.19 `npm ci` avisa
+   `EBADENGINE react-router@8.4.0 required: { node: '>=22.22.0' }`. La suite pasa igual, pero el
+   aviso es real y `AGENTS.md` pide Node 24.
+
+Orden que funciona: `git pull` en los tres repos → arrancar Docker Desktop →
+`docker compose up -d mysql` → `.\scripts\init-test-db.ps1` →
+`docker compose run --rm citas-api-dev mvn -B test` → en `citas-web`, `npm ci` y luego `npm run
+typecheck`, `npm run lint`, `npm run test`, `npm run build`.

@@ -1,0 +1,93 @@
+LOOP_02 · iteración 2 · FASE ROJA
+==================================
+
+Fase roja A — pruebas de integración escritas antes de implementar D38 y D39.
+Comando (raíz del workspace):
+  docker compose run --rm citas-api-dev mvn -B clean test \
+    -Dtest='ProfessionalAgendaIntegrationTest,RescheduleDecisionIntegrationTest' \
+    -Dsurefire.failIfNoSpecifiedTests=false
+
+Resultado: Tests run: 45, Failures: 8, Errors: 0, Skipped: 0  (BUILD FAILURE, 1:24 min)
+
+[ERROR] Failures:
+[ERROR]   ProfessionalAgendaIntegrationTest.aFailureReleasingTheHoldRollsBackTheClosure:579
+Expecting actual:
+  200
+to be greater than or equal to:
+  500
+          -> D38 no existe: releaseReservations nunca se llama al cerrar, el stub no se dispara.
+
+[ERROR]   ProfessionalAgendaIntegrationTest.closingTheCareCancelsThePendingRescheduleAndReleasesItsHold:533
+expected: "CANCELLED"
+ but was: "PENDING"
+          -> D38: la solicitud sigue PENDING tras cerrar como COMPLETED.
+
+[ERROR]   ProfessionalAgendaIntegrationTest.markingNoShowAlsoCancelsThePendingReschedule:559
+expected: "CANCELLED"
+ but was: "PENDING"
+          -> D38: idem con NO_SHOW.
+
+[ERROR]   RescheduleDecisionIntegrationTest.anApprovedRescheduleCarriesTheRescheduledEvent:560
+No value at JSON path "$.history[1].event"
+          -> D39: HistoryEntry.event no se emite.
+
+[ERROR]   RescheduleDecisionIntegrationTest.approvingMovesTheSameAppointmentAndConvertsTheHeldRows:289
+No value at JSON path "$.history[2].event"
+Caused by: com.jayway.jsonpath.PathNotFoundException: No results for path: $['history'][2]['event']
+          -> D39: idem sobre una cita especializada (REQUESTED → APPROVED → APPROVED).
+
+[ERROR]   RescheduleDecisionIntegrationTest.concurrentDecisionsLetExactlyOneWin:591
+expected: 0
+ but was: 1
+          -> D39: cuando gana el rechazo sigue quedando una fila de historial ADMIN.
+
+[ERROR]   RescheduleDecisionIntegrationTest.onlyTheApprovalIsRecordedInTheHistory:520
+[D39: el rechazo no escribe historial]
+expected: 1
+ but was: 2
+          -> D39: rechazar escribe la fila APPROVED/ADMIN con el motivo del rechazo (D22 literal).
+
+[ERROR]   RescheduleDecisionIntegrationTest.rejectingKeepsTheAppointmentAndReleasesTheProposal:348
+expected: 2
+ but was: 3
+          -> D39: idem, contado sobre la cita conservada.
+
+
+Fase roja B — pruebas unitarias de dominio contra la API nueva (aún inexistente).
+Comando:
+  docker compose run --rm citas-api-dev mvn -B clean test \
+    -Dtest='RescheduleRequestTest,HistoryEventTest' -Dsurefire.failIfNoSpecifiedTests=false
+
+Resultado: BUILD FAILURE en test-compile (la prueba no compila porque el dominio
+no declara todavía lo que D38 y D39 exigen):
+
+[ERROR] COMPILATION ERROR :
+[ERROR] /workspace/src/test/java/com/fcv/citas/domain/appointment/HistoryEventTest.java:[17,24] cannot find symbol
+[ERROR]   symbol:   variable HistoryEvent
+[ERROR]   location: class com.fcv.citas.domain.appointment.HistoryEventTest
+[ERROR] .../HistoryEventTest.java:[30,72] [30,24] [39,28] [42,20] [43,20] [49,59] [49,20] cannot find symbol
+[ERROR] /workspace/src/test/java/com/fcv/citas/domain/appointment/RescheduleRequestTest.java:[146,67] cannot find symbol
+[ERROR] .../RescheduleRequestTest.java:[158,54] incompatible types:
+          com.fcv.citas.domain.appointment.RescheduleRequest.Rejection cannot be converted to
+          com.fcv.citas.domain.appointment.RescheduleRequest
+[ERROR] .../RescheduleRequestTest.java:[169,53] incompatible types: (idem)
+[ERROR] .../RescheduleRequestTest.java:[197,48] [202,40] cannot find symbol
+          -> RescheduleRequest.cancelWithClosure(long) (D38) y HistoryEvent (D39) no existen;
+             reject(...) todavía devuelve Rejection, que arrastra una transición de la cita (D22).
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:testCompile
+        on project citas-api: Compilation failure
+
+
+FASE VERDE (misma iteración, tras implementar D38 y D39)
+========================================================
+
+docker compose run --rm citas-api-dev mvn -B clean test
+  -> Tests run: 480, Failures: 0, Errors: 0, Skipped: 0   BUILD SUCCESS (5:45 min)
+     Base de partida 471 + 9 pruebas nuevas = 480.
+     HexagonalArchitectureTest: Tests run: 4, Failures: 0, Errors: 0.
+
+Clases con concurrencia repetidas 2 veces (descartar intermitencias):
+  -Dtest=RescheduleDecisionIntegrationTest,RescheduleRequestIntegrationTest,
+         BookingIntegrationTest,CancellationIntegrationTest,ProfessionalAgendaIntegrationTest
+  pasada 1 -> Tests run: 89, Failures: 0, Errors: 0  BUILD SUCCESS
+  pasada 2 -> Tests run: 89, Failures: 0, Errors: 0  BUILD SUCCESS
