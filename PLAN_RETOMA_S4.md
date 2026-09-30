@@ -255,17 +255,29 @@ está `PENDING`; la franja nueva queda retenida; `APPROVED` libera la antigua y 
 retención en ocupación **sin abrir hueco** (se actualiza `reservation_type`, no se borra y se
 reinserta); `REJECTED` libera la retención y conserva la cita; solo ADMIN decide.
 
-> **Estado al 2026-09-30:** la **iteración 1 ya dejó código escrito** (migración `V10__reschedule_previous_slot.sql`, ruta `citas/:id/reprogramar` en `App.tsx:73`) y el
-> `frontend-verifier` dio PASS. Las casillas siguen sin marcar a propósito: el `backend-verifier`
-> quedó **interrumpido** y la iteración 2 puede cambiar este código. Se marcan cuando el loop cierre.
+> **LOOP_02 cerrado el 2026-09-30 en 3 iteraciones de 4.** Backend **484/484**, frontend **218/218**,
+> los dos Verifier reejecutaron las suites ellos mismos. El `backend-verifier` dio **PASS al
+> comportamiento** —43 criterios con evidencia— y **FAIL a la DoD** por documentos desalineados; la
+> iteración 3 cerró ese FAIL. Detalle en `evidencias/s4/loops/LOOP-02/iter-2-verifier.json`.
 
-- [ ] Iteración de dominio: agregado `RescheduleRequest` con aprobar/rechazar; regla de 60 min **reutilizada**, no reescrita
-- [ ] `POST /api/patient/appointments/{id}/reschedule` (HU-027) + prueba de concurrencia contra una reserva normal por la misma franja
-- [ ] Bandeja con `type: 'RESCHEDULE_REQUEST'` y filtros según D24 (HU-029); `POST /api/admin/reschedules/{id}/approve|reject` (HU-031) con historial según D22 y CA-07 (decisión concurrente / cancelación simultánea)
-- [ ] Detalle de la cita con la última reprogramación y su motivo; opciones "conservar" (sin escritura) y "cancelar" (reutiliza F3) (HU-028)
-- [ ] Búsqueda de disponibilidad excluye franjas retenidas por reprogramación (HU-022 CA-03)
-- [ ] Frontend: `/paciente/citas/:id/reprogramar`, bandeja admin de reprogramaciones, aviso de rechazo
-- [ ] Log por iteración en `evidencias/s4/loops/LOOP-02/`
+- [x] Iteración de dominio: agregado `RescheduleRequest` con aprobar/rechazar; regla de 60 min **reutilizada**, no reescrita
+- [x] `POST /api/patient/appointments/{id}/reschedule` (HU-027) + prueba de concurrencia contra una reserva normal por la misma franja — `RescheduleRequestIntegrationTest:559`
+- [x] Bandeja con `type: 'RESCHEDULE_REQUEST'` y filtros según D24 (HU-029); `POST /api/admin/reschedules/{id}/approve|reject` (HU-031) con historial según **D39, que refina D22**, y CA-07 (decisión concurrente / cancelación simultánea) — `RescheduleDecisionIntegrationTest:577,603,799,848`
+- [x] Detalle de la cita con la última reprogramación y su motivo; opciones "conservar" (sin escritura) y "cancelar" (reutiliza F3) (HU-028)
+- [x] Búsqueda de disponibilidad excluye franjas retenidas por reprogramación (HU-022 CA-03) — `RescheduleRequestIntegrationTest:342`
+- [x] Frontend: `/paciente/citas/:id/reprogramar`, bandeja admin de reprogramaciones, aviso de rechazo
+- [x] Log por iteración en `evidencias/s4/loops/LOOP-02/` — iteraciones 1, 2 y 3, con fase roja y veredicto de los dos Verifier
+
+**Los dos riesgos del §5 quedaron descartados con prueba, no con argumento:** aprobar actualiza la
+reserva **en sitio** (`created_at` conservado; dos reservas concurrentes contra la franja nueva
+reciben 409) y el libro de slots sigue teniendo **tres** tenedores, verificado por inventario.
+
+**Lo que el loop enseñó, y no sale en las cifras:** el Verifier encontró que la *razón escrita* de
+por qué la derivación de D39 es segura era **falsa**, aunque la conclusión fuera correcta. Al
+simular la violación, `HistoryEventTest` y `HexagonalArchitectureTest` **seguían en verde**: la
+suite entera pasaba con la mentira dentro. Se cerró con dos pruebas nuevas (`HistoryRowInvariantTest`
+por reflexión, `HistoryWritersArchitectureTest` sobre bytecode). Una prueba verde no dice que el
+razonamiento sea correcto; solo dice que ese camino no se rompió.
 
 🔖 **F5** — citas-api `feat(s4): reprogramación con retención y decisión administrativa`; citas-web ídem; raíz: logs
 
@@ -367,26 +379,17 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-25 · F2+F3 backend (290 pruebas) · frontend de S4 completo contra el contrato (168 pruebas) · LOOP_01 PASS en 1 iteración · sin commits por indicación del usuario
 - 2026-09-25 · F4, F6, F7 (backend 422 → 471 con F5), D36 cookie verificada contra la API real, menú lateral arreglado, hardening de frontend (212 pruebas). LOOP_02 iteración 1: Builder completed; Verifier frontend PASS; Verifier backend interrumpido por pausa del usuario
 - 2026-09-25 · 🔖 **pausa pedida por el usuario**: commits de S4 en `develop` de los tres repos
-- 2026-09-30 · S4 retomada en **otra máquina**: bajados 16 commits en la raíz, 28 en citas-api y 14 en citas-web desde `origin/develop` (fast-forward, los tres repos limpios). Saneadas las casillas de F4, F6, F7 y F10 contra el código real (§4). Wiki actualizada con el estado real. Decidido por el usuario: `main` se queda como está (R2). Suites **no** reejecutadas: Docker Desktop no estaba arrancado
+- 2026-09-30 · S4 retomada en **otra máquina**: bajados 16 commits en la raíz, 28 en citas-api y 14 en citas-web desde `origin/develop` (fast-forward, los tres repos limpios). Saneadas las casillas de F4, F6, F7 y F10 contra el código real (§4). Wiki actualizada con el estado real. Decidido por el usuario: `main` se queda como está (R2)
+- 2026-09-30 · 🔖 **F5 cerrada. LOOP_02 PASS en 3 iteraciones de 4.** Backend 484/484 y frontend 218/218, con los dos Verifier reejecutando las suites. Iteración 2: D38 y D39 implementados, `frontend-verifier` PASS y `backend-verifier` PASS al comportamiento / FAIL a la DoD. Iteración 3: contrato REST, HU-031, HU-032 y EP-008 alineados, y el invariante de D39 protegido con dos pruebas nuevas. HU-027, HU-028 y HU-031 pasan a `En validación` con matriz de evidencia; **ninguna a `Completada`**, porque les faltan criterios de frontend y la prueba manual de F10. Commits en los tres repos, subidos a `origin`
 
 ## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
-Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Base reconfirmada el 2026-09-30 en la máquina de
-escritorio:** backend **471/471** (`BUILD SUCCESS`, 3:21 min, MySQL real en Docker) y frontend
-**212/212** con typecheck, `oxlint` y build limpios. Las cifras del 2026-09-25 se sostienen.
-Si retomas en otro equipo, lee antes "Retomar en un clon que ya existe" (abajo). Falta, en este orden:
+Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Estado al 2026-09-30, todo verificado en esta máquina:**
+backend **484/484** y frontend **218/218**, con typecheck, `oxlint` y build limpios. **F5 cerrada**
+(LOOP_02 PASS en 3 iteraciones). Si retomas en otro equipo, lee antes "Retomar en un clon que ya
+existe" (abajo). Falta, en este orden:
 
-1. **LOOP_02, iteración 2** (presupuesto: quedan 3). Feedback para el Builder, ya decidido en
-   `dec-006`:
-   - **D38:** cerrar como `COMPLETED`/`NO_SHOW` cancela la reprogramación `PENDING` y libera su
-     retención.
-   - **D39:** solo la aprobación escribe historial; se añade `HistoryEntry.event = 'RESCHEDULED'`
-     y la UI la rotula "Reprogramada".
-   - **Frontend:** el aviso de rechazo no debe ofrecer "cancelar" si la cita ya empezó; quitar
-     `cancellable`/`reschedulable` del tipo `AdminAppointment`.
-   - Después, los dos Verifier otra vez. El de backend quedó interrumpido: hay que ejecutarlo
-     entero. Logs en `evidencias/s4/loops/LOOP-02/`.
-2. **F8 · LOOP_03** "una regla, un sitio" (§4 F8).
+1. **F8 · LOOP_03** "una regla, un sitio" (§4 F8).
 3. **F9 pendiente:** ampliar `scripts/e2e-smoke.mjs` (cancelar, reprogramar aprobar y rechazar,
    cierre, recuperación, EPS) y ejecutarlo contra la API real. Actualizar `contrato-rest-*` con
    el corte final.
