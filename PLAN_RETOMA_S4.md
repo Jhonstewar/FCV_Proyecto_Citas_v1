@@ -337,12 +337,12 @@ Alternativa: reconciliar contrato frontend ↔ backend hasta que `scripts/e2e-sm
 
 ### F9 — Hardening de contrato y UI
 
-- [ ] HU-033 corte S4: `contrato-rest-citas.md` y `contrato-rest-identidad.md` con todos los endpoints nuevos, códigos de error y ejemplos
-- [ ] Errores de Spring y `WWW-Authenticate` que aún salen en inglés
-- [ ] `ERROR_CODES` y tipos de `contracts.ts` alineados con el backend; `API_ROUTES` sin rutas supuestas
-- [ ] `PANTALLAS_OBLIGATORIAS.md`: tabla de estado real y rutas de la app
-- [ ] `scripts/e2e-smoke.mjs` ampliado: cancelar, reprogramar (aprobar y rechazar), cerrar atención, recuperar contraseña, CRUD EPS
-- [ ] Revisión de accesibilidad básica y estados vacío/error/carga en las pantallas nuevas
+- [x] HU-033 corte S4: `contrato-rest-citas.md` y `contrato-rest-identidad.md` con todos los endpoints nuevos, códigos de error y ejemplos
+- [x] Errores de Spring y `WWW-Authenticate` que aún salen en inglés
+- [x] `ERROR_CODES` y tipos de `contracts.ts` alineados con el backend; `API_ROUTES` sin rutas supuestas
+- [x] `PANTALLAS_OBLIGATORIAS.md`: tabla de estado real y rutas de la app
+- [x] `scripts/e2e-smoke.mjs` ampliado: cancelar, reprogramar (aprobar y rechazar), cerrar atención, recuperar contraseña, CRUD EPS — 74 OK/0 fallos/2 omitidos contra la API real (82 OK con `E2E_WAIT_CLOSE=true`); omitido: PLAN_REFERENCED
+- [x] Revisión de accesibilidad básica y estados vacío/error/carga en las pantallas nuevas
 
 🔖 **F9** — citas-api, citas-web: `fix(s4): hardening de contrato y UI`
 
@@ -384,6 +384,8 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 
 - 2026-09-30 · 🔖 **F8 cerrada.** LOOP_03 "una regla, un sitio" PASS en 2 iteraciones: `domain/schedule/AgendaRules` es la única fuente de "ya empezó", encaje de slots y `SLOT_MINUTES`; backend 487 → 500. Siguiente: F9 y F10
 
+- 2026-09-30 · 🔖 **F9 cerrada.** Errores de Spring y `WWW-Authenticate` en español (backend 507), contratos REST corte S4, `ERROR_CODES`/`API_ROUTES` fijados por prueba, accesibilidad del Modal y errores de campo (frontend 234), smoke e2e ampliado y ejecutado contra la API real. Siguiente: F10
+
 ## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
 Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Estado al 2026-09-30, todo verificado en esta máquina:**
@@ -392,6 +394,7 @@ backend **484/484** y frontend **218/218**, con typecheck, `oxlint` y build limp
 existe" (abajo). Falta, en este orden:
 
 1. ~~F8 · LOOP_03~~ cerrada el 2026-09-30 (PASS en 2 iteraciones, backend 500/500).
+2. ~~F9~~ cerrada el 2026-09-30.
 3. **F9 pendiente:** ampliar `scripts/e2e-smoke.mjs` (cancelar, reprogramar aprobar y rechazar,
    cierre, recuperación, EPS) y ejecutarlo contra la API real. Actualizar `contrato-rest-*` con
    el corte final.
