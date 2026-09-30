@@ -348,8 +348,8 @@ Alternativa: reconciliar contrato frontend ↔ backend hasta que `scripts/e2e-sm
 
 ### F10 — Verificación, deuda de S2 y cierre
 
-- [ ] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3 — **no ha corrido**: las 11 HU de S4 siguen en `Aprobada`
-- [ ] HU a `Completada` solo con matriz completa; las que no, quedan abiertas con su causa — cero HU cerradas en S4 (siguen las 16 de S2+S3)
+- [ ] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3 — **parcial**: F5 verificó HU-027, HU-028 y HU-031 (y de paso HU-021, HU-022 CA-03 y HU-029 por el backend). Quedan **8 HU en `Aprobada` que nunca ha visto un verificador**: HU-006, HU-007, HU-008, HU-009, HU-012, HU-020, HU-021, HU-026
+- [ ] HU a `Completada` solo con matriz completa; las que no, quedan abiertas con su causa — **cero HU cerradas en S4 todavía**. Hay **8 en `En validación`** esperando cierre: HU-005, HU-011, HU-016, HU-022 y HU-029 (deuda de S3) + HU-027, HU-028 y HU-031 (de F5). A todas les falta la verificación de frontend criterio a criterio y la prueba manual en navegador
 - [ ] Comparación del modelo 3FN propio contra `database/reference/` → wiki `datos-modelo-3fn` — `datos-modelo-3fn.md:17-20` sigue diciendo que está pendiente desde S2
 - [ ] Guía de prueba manual en navegador con los tres roles (`EVIDENCIAS_S4.md`), incluido el pendiente de S2 — `EVIDENCIAS_S4.md` solo tiene la §1 de LOOP_01
 - [ ] Wiki: LINT, `index.md`, `log.md` — `index.md` y `log.md` sí actualizados el 2026-09-30; **falta el LINT** (la última entrada `lint` es del 2026-09-23)
