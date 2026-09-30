@@ -1,0 +1,47 @@
+{
+  "goal": "Las tres correcciones que el Verifier de frontend de la iteracion 1 destapo, mas el rotulo de D39",
+  "loop": "LOOP_02_GUIADO_AVANZADO",
+  "iteration": 2,
+  "budget": 4,
+  "builder": "completed",
+  "builderAgent": "claude (frontend-ui; solo citas-web, sin tocar CSS ni el sistema visual)",
+  "escalation": "none (el unico campo nuevo del contrato, HistoryEntry.event, venia dado por el Builder de backend)",
+  "scope": [
+    "El aviso de rechazo (HU-028) no debe prometer 'cancelar' si la cita ya empezo",
+    "El tipo AdminAppointment no debe exigir cancellable/reschedulable, que el backend no emite",
+    "D39: una entrada de historial con event === 'RESCHEDULED' se rotula 'Reprogramada', no 'Aprobada'; el motivo del rechazo sale de lastReschedule.decisionReason"
+  ],
+  "filesChanged": [
+    "src/api/contracts.ts",
+    "src/api/s4Api.test.ts",
+    "src/pages/patient/AppointmentDetailPage.tsx",
+    "src/patientLifecycle.test.tsx",
+    "src/test/fakeBackend.tsx"
+  ],
+  "frontendTests": "pass",
+  "frontendTestsDetail": "218/218 en 20 ficheros (212 base + 6 nuevas: 2 en s4Api.test.ts, 4 en patientLifecycle.test.tsx)",
+  "frontendBuild": "pass",
+  "frontendBuildDetail": "typecheck 0, oxlint 0, build OK (2043 modulos, dist/assets/index-DIy0vXQr.js 464,76 kB)",
+  "cssTouched": false,
+  "contractDeviations": 1,
+  "contractDeviationsDetail": [
+    "HistoryEntry.event?: 'RESCHEDULED' se declara en contracts.ts:486 y coincide exacto con lo que el Builder de backend implemento en la misma iteracion. Cuando el campo no llega, la UI rotula por estado como antes: el cambio es tolerante.",
+    "AdminAppointment pasa a Omit<AppointmentDetail, 'cancellable' | 'reschedulable'>. No requiere nada del backend: la divergencia era solo del tipo TS. La aclaracion 5 del contrato ya lo decia."
+  ],
+  "builderAssumptions": [
+    "En una cita APPROVED, cancellable === false implica que la cita ya empezo (el contrato define cancellable como 'futura y no terminal', D16/D17). De ahi el texto 'Su hora ya llego'. AUDITADO Y CONFIRMADO por el Verifier contra Appointment.java:90-92 y AppointmentStatus.allowedNext(): en APPROVED el primer factor es constante, asi que la implicacion se sostiene.",
+    "La accion del aviso cuando no se puede cancelar se llama 'Entendido' y no 'Conservar mi cita': no hay eleccion que tomar, la cita ya esta conservada por RN-10 y el boton solo cierra el aviso, sin escribir en la API."
+  ],
+  "verifier": "PASS (alcance de la iteracion 2 de frontend)",
+  "verifierDetail": "Las tres correcciones con prueba que fallaria si se revirtieran. Los cuatro comandos reejecutados por el Verifier coinciden con lo declarado. Las HU NO quedan cerrables: 2 defectos de producto y 3 desviaciones abiertas, la mayoria de los CA de HU-027/031/032 son de backend, y falta la prueba manual en navegador.",
+  "verifierFindings": [
+    "D-1 media: el aviso CANCELLED descarta decisionReason y deja al paciente sin explicacion, aunque el texto visible no miente. D37 creo ese dato justo para el detalle.",
+    "D-2 media-baja: contrato-rest-citas.md contradice al backend y al frontend (no declara HistoryEntry.event, describe el rechazo pre-D39 y le falta el decisionReason de D38). Cross-repo: citas-web no puede arreglarlo.",
+    "D-3 baja: la prueba del camino 'Entendido' afirma en un comentario que no escribe, pero no lo asevera con writes(calls).",
+    "D-4 baja: el foco se pierde al cerrar el aviso de rechazo (preexistente en 'Conservar', heredado en 'Entendido').",
+    "D-5 baja: getAdminAppointment en adminApi.ts:109 no tiene consumidor (preexistente).",
+    "R-1 riesgo: las filas de historial escritas antes de D39 se rotularan 'Reprogramada' con el motivo de un rechazo. Datos heredados; RN-12 impide reescribir historial.",
+    "R-2 riesgo: el texto 'Su hora ya llego' depende de una garantia del backend que ninguna prueba de frontend protege."
+  ],
+  "result": "FRONTEND_PASS (pendiente el veredicto de backend-verifier para cerrar la iteracion)"
+}

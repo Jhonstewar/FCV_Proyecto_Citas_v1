@@ -1,0 +1,47 @@
+{
+  "loop": "LOOP_02_GUIADO_AVANZADO",
+  "iteration": 2,
+  "budget": 4,
+  "iterationsUsed": 2,
+
+  "backendVerifier": "FAIL (por Definition of Done, no por comportamiento)",
+  "backendVerifierRan": "entero, sin reanudar la iteracion 1",
+  "backendTests": "pass",
+  "backendTestsDetail": "480/480, 0 fallos, 0 errores, BUILD SUCCESS, 03:37 min, reejecutado por el Verifier. HexagonalArchitectureTest 4/4. Clases concurrentes 89/89 en dos pasadas identicas.",
+  "backendBehaviour": "PASS limpio: los 43 CA de las siete HU implicadas tienen evidencia concreta; las cinco reglas innegociables (RN-01, RN-09, RN-10, sin hueco al aprobar, solo ADMIN decide) se cumplen.",
+  "planRisksDischarged": [
+    "Riesgo n.1 del plan (aprobar borra y reinserta la reserva, abriendo un hueco): DESCARTADO. convertHeldToAppointment es un UPDATE en sitio; RescheduleDecisionIntegrationTest:220 compara created_at antes y despues y :660 lanza dos reservas concurrentes contra la franja nueva, ambas 409 SLOT_TAKEN.",
+    "Riesgo n.2 del plan (los tres caminos de liberacion divergen): DESCARTADO. ReservationHolder.Kind sigue con 3 valores; inventario completo de mutaciones del libro de slots hecho por el Verifier."
+  ],
+
+  "frontendVerifier": "PASS (alcance de la iteracion 2 de frontend)",
+  "frontendTests": "pass",
+  "frontendTestsDetail": "218/218 en 20 ficheros, typecheck 0, oxlint 0, build OK. Reejecutado por el Verifier.",
+
+  "builderClaimsAudited": "7 de 7 comprobadas. 6 confirmadas. La n.5 (justificacion de la derivacion de D39) resulto falsa como esta enunciada, aunque la conclusion es correcta por otra razon: ver blockers[3].",
+  "builderDeclaredRiskScope": "NULO hoy, medido contra las bases reales: citas_fcv_training (desarrollo) y citas_fcv_training_test tienen 0 filas en appointment_status_history y 0 en reschedule_requests. La base de desarrollo esta ademas en V4, nunca aplico V5-V10, asi que jamas ejecuto el endpoint de rechazo. La afirmacion del Builder de que 'siguen en la base de desarrollo' era factualmente falsa. Queda como riesgo potencial, no actual.",
+
+  "blockers": [
+    "ALTA n.1 - contrato-rest-citas.md:354 sigue afirmando que rechazar escribe APPROVED/ADMIN con el motivo; :63-64 define HistoryEntry SIN event?: 'RESCHEDULED' que la API ya emite; :355 no lista el decisionReason nuevo de D38. El contrato publicado dice lo contrario del codigo. Incumple la DoD 'contrato reflejado en HU-033' de HU-031.",
+    "ALTA n.2 - HU-031 sigue redactada en D22: CA-06 (:144) exige fila de historial en el rechazo y la DoD (:171) exige persistir el motivo 'y en el historial'. dec-006 dice que CA-06 se ajusta a D39, pero el ajuste nunca se escribio en la HU. La nota :205 sigue describiendo D22 como vigente. Las matrices de HU-027, HU-028 y HU-031 estan integras en 'Pendiente'.",
+    "MEDIA n.3 - D38 no esta documentado en el contrato del cierre: contrato-rest-citas.md:229-230 y :306-309 no mencionan que cerrar la atencion cancela la solicitud PENDING y libera su retencion, siendo un efecto observable de dos endpoints REST.",
+    "MEDIA n.4 - la justificacion escrita de la derivacion de D39 es incorrecta. HistoryEvent.java:20-21, HistoryEventTest.java:22-24 y el informe del Builder afirman que la reprogramacion aprobada es 'la unica escritura de historial que no pasa por transitionTo'. FALSO: bookGeneral (Appointment.java:46) y requestSpecialized (:54) tambien construyen StatusChange directamente. El invariante real, que nadie escribio ni protegio con prueba, es que el historial se escribe en exactamente dos sitios (JpaAppointmentRepositoryAdapter.create:46 y .apply:89) y que create solo lo invoca BookAppointmentUseCase:68 sobre una cita con id == null, es decir siempre la primera fila, donde previous == null. Riesgo: quien confie en la razon escrita puede anadir una escritura directa sobre una cita existente y romper la etiqueta en silencio.",
+    "HU-032 DoD 'contrato del historial reflejado', ya marcada Cumple, quedo OBSOLETA: el contrato no declara event."
+  ],
+
+  "openFindings": [
+    "BAJA n.5 - la derivacion de D39 depende de un invariante de aplicacion que el esquema no protege: appointment_status_history admite dos filas consecutivas con el mismo status_id por vias ajenas a la aplicacion (SQL manual, semillas). Limite conocido, no incumplimiento: es una derivacion de lectura, no una regla de negocio que proteja datos.",
+    "BAJA n.6 - NO VERIFICABLE por falta de prueba: la carrera 'cerrar la atencion' contra 'decidir la reprogramacion', que D38 abre. Existe el caso secuencial (RescheduleDecisionIntegrationTest:478) y el argumento estructural es solido (los tres caminos bloquean primero la cita y despues la solicitud, orden unico que serializa sin interbloquear), pero la concurrencia concreta no esta probada.",
+    "INFO n.7 - HU-029 CA-06 se apoya en la regla de prefijo de SecurityConfig:83 y en una prueba sobre /api/admin/specialties; no hay asercion de 403/401 sobre /api/admin/inbox.",
+    "INFO n.8 - la base de desarrollo citas_fcv_training esta en V4 (2026-09-17) y el codigo exige V10. Flyway las aplicara al arrancar la app, pero conviene saberlo antes de la prueba manual en navegador.",
+    "FRONTEND D-1 media - el aviso CANCELLED descarta decisionReason y deja al paciente sin explicacion cuando el profesional cerro la atencion (D38). El texto visible no miente, calla. D37 creo ese dato justo para el detalle.",
+    "FRONTEND D-3 baja - la prueba del camino 'Entendido' afirma en un comentario que no escribe, pero no lo asevera con writes(calls).",
+    "FRONTEND D-4 baja - el foco se pierde al cerrar el aviso de rechazo (preexistente en 'Conservar', heredado en 'Entendido').",
+    "FRONTEND D-5 baja - getAdminAppointment (adminApi.ts:109) no tiene consumidor (preexistente).",
+    "FRONTEND R-2 riesgo - el texto 'Su hora ya llego' depende de una garantia del backend (Appointment.isCancellableAt) que ninguna prueba de frontend protege. Hoy es verdadero: el Verifier lo confirmo contra Appointment.java:90-92 y AppointmentStatus.allowedNext()."
+  ],
+
+  "security": "Sin hallazgos. .env intacto, ningun secreto ni token en el diff, ninguna migracion editada despues de aplicarse (checksums validados en cada arranque), cero imports de Spring o JPA en domain/ ni application/.",
+
+  "result": "ITERATION_3_REQUIRED (por DoD documental, no por comportamiento). Ninguna de las HU implicadas procede cerrarse como Completada hasta que el contrato REST y los textos de HU-031 y HU-032 se alineen con D38 y D39 y se llenen las matrices. Ninguna de esas correcciones exige tocar codigo de produccion; la n.4 si exige corregir dos javadoc y anadir la prueba que proteja el invariante real."
+}

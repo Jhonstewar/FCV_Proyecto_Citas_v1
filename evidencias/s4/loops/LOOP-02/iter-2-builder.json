@@ -1,0 +1,24 @@
+{
+  "goal": "D38 (cerrar la atencion cancela la reprogramacion PENDING) y D39 (historial solo de la aprobacion, HistoryEntry.event)",
+  "loop": "LOOP_02_GUIADO_AVANZADO",
+  "iteration": 2,
+  "budget": 4,
+  "builder": "completed",
+  "builderAgent": "claude (backend-domain; solo dominio, aplicacion y dos puntos de infraestructura autorizados por el alcance)",
+  "escalation": "none (sin migracion, sin columna nueva, sin dependencias nuevas; D39 se deriva en lectura)",
+  "migration": "ninguna",
+  "redPhase": "fase A: 8 fallos de 45 pruebas de integracion antes de implementar; fase B: BUILD FAILURE en test-compile de las pruebas de dominio (iter-2-red.txt)",
+  "backendTests": "pass",
+  "backendTestsDetail": "480/480 (471 base + 9 nuevas); HexagonalArchitectureTest 4/4; clases concurrentes repetidas 2 veces, 89/89 cada vez",
+  "contractDeviations": 1,
+  "contractDeviationsDetail": [
+    "HistoryEntry.event?: 'RESCHEDULED' (aditivo): lo emite /api/patient/appointments/{id} y /api/admin/appointments/{id} solo en la fila cuyo estado repite el de la anterior; se omite en las demas (non_null)",
+    "El rechazo de una reprogramacion ya NO anade fila a AppointmentDetail.history ni a AdminAppointment.history; su motivo sigue en lastReschedule.decisionReason"
+  ],
+  "builderRisks": [
+    "HistoryEntry.event se deriva de que el estado repita el de la fila anterior: si alguna vez se escribiera historial con el mismo estado por otro motivo, se rotularia RESCHEDULED por error. Hoy es imposible (ninguna transicion va de un estado a si mismo) y HistoryEventTest lo fija.",
+    "D38 usa ReservationHolder.ofRescheduleRequest (camino ya existente): NO libera la franja de la cita cerrada, como exige el contrato S4",
+    "La fila de historial del rechazo escrita antes de D39 sigue en la base de datos de desarrollo: D39 no la borra (no se reescribe historial, RN-12)"
+  ],
+  "verifier": "pending"
+}
