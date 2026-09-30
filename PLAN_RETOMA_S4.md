@@ -330,8 +330,8 @@ Los diez puntos que exige la guía:
 
 Alternativa: reconciliar contrato frontend ↔ backend hasta que `scripts/e2e-smoke.mjs` ampliado y el build queden en verde.
 
-- [ ] Diseño del loop escrito en `prompts/goal-loop/LOOP_03_RETO_INDEPENDIENTE.md` (sección del estudiante)
-- [ ] Ejecución con log y resultado
+- [x] Diseño del loop escrito en `prompts/goal-loop/LOOP_03_RETO_INDEPENDIENTE.md` (sección del estudiante)
+- [x] Ejecución con log y resultado — PASS en 2 iteraciones; `AgendaRules`; backend 500/500; citas-api `ed1a320`
 
 🔖 **F8** — citas-api `refactor(s4): …`; raíz: `test(s4): loop propio con log`
 
@@ -382,6 +382,8 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-30 · S4 retomada en **otra máquina**: bajados 16 commits en la raíz, 28 en citas-api y 14 en citas-web desde `origin/develop` (fast-forward, los tres repos limpios). Saneadas las casillas de F4, F6, F7 y F10 contra el código real (§4). Wiki actualizada con el estado real. Decidido por el usuario: `main` se queda como está (R2)
 - 2026-09-30 · 🔖 **F5 cerrada. LOOP_02 PASS en 3 iteraciones de 4.** Backend 484/484 y frontend 218/218, con los dos Verifier reejecutando las suites. Iteración 2: D38 y D39 implementados, `frontend-verifier` PASS y `backend-verifier` PASS al comportamiento / FAIL a la DoD. Iteración 3: contrato REST, HU-031, HU-032 y EP-008 alineados, y el invariante de D39 protegido con dos pruebas nuevas. HU-027, HU-028 y HU-031 pasan a `En validación` con matriz de evidencia; **ninguna a `Completada`**, porque les faltan criterios de frontend y la prueba manual de F10. Commits en los tres repos, subidos a `origin`
 
+- 2026-09-30 · 🔖 **F8 cerrada.** LOOP_03 "una regla, un sitio" PASS en 2 iteraciones: `domain/schedule/AgendaRules` es la única fuente de "ya empezó", encaje de slots y `SLOT_MINUTES`; backend 487 → 500. Siguiente: F9 y F10
+
 ## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
 Di *"Retoma S4 desde PLAN_RETOMA_S4.md"*. **Estado al 2026-09-30, todo verificado en esta máquina:**
@@ -389,7 +391,7 @@ backend **484/484** y frontend **218/218**, con typecheck, `oxlint` y build limp
 (LOOP_02 PASS en 3 iteraciones). Si retomas en otro equipo, lee antes "Retomar en un clon que ya
 existe" (abajo). Falta, en este orden:
 
-1. **F8 · LOOP_03** "una regla, un sitio" (§4 F8).
+1. ~~F8 · LOOP_03~~ cerrada el 2026-09-30 (PASS en 2 iteraciones, backend 500/500).
 3. **F9 pendiente:** ampliar `scripts/e2e-smoke.mjs` (cancelar, reprogramar aprobar y rechazar,
    cierre, recuperación, EPS) y ejecutarlo contra la API real. Actualizar `contrato-rest-*` con
    el corte final.

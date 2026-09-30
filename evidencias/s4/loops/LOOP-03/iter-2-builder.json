@@ -1,0 +1,13 @@
+{
+  "goal": "LOOP_03 iteracion 2: SlotAllocator y ProfessionalScheduleController delegan en AgendaRules.hasStarted",
+  "iteration": 2,
+  "builder": {
+    "filesTouched": [
+      "citas-api/src/main/java/com/fcv/citas/application/appointment/SlotAllocator.java",
+      "citas-api/src/main/java/com/fcv/citas/infrastructure/rest/schedule/ProfessionalScheduleController.java"
+    ],
+    "notes": "Sin cambio de comportamiento; cubiertas por pruebas existentes (PAST_TIME en reserva/reprogramacion, editable en ScheduleIntegrationTest)."
+  },
+  "backendTests": { "total": 500, "failures": 0, "errors": 0 },
+  "result": "PASS"
+}

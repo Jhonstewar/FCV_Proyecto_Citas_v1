@@ -1,0 +1,17 @@
+{
+  "goal": "LOOP_03 una regla, un sitio",
+  "iteration": 2,
+  "verifier": "backend-verifier (independiente)",
+  "backendTests": {"run": 500, "failures": 0, "errors": 0, "skipped": 0, "build": "SUCCESS", "hexagonalArchitectureTest": "4 tests, verde", "baseline": 487},
+  "result": {
+    "verdict": "PASS con observaciones",
+    "points": {
+      "1_single_implementation": "PASS: AgendaRules.java (SLOT_MINUTES, isOnGrid, hasStarted, fits); AvailabilityBlock, Appointment, TimeSlot, SlotAllocator y ProfessionalScheduleController delegan. SLOT_MINUTES en AvailabilityBlock/Specialty son alias de la constante unica.",
+      "2_equivalence_test": "PASS con reservas: SearchBookingEquivalenceIntegrationTest compara oferta SQL real vs AvailabilityBlock.canHost+libres sobre 2 duraciones x 2 inicios x 4 tamanos x 4 ocupaciones, candidatos cada 15 min, y la reserva real acepta/rechaza. Fallaria si el SQL divergiera en consecutividad/ocupacion. Limites: usa dia +5, por lo que la clausula SQL 'start_time > :nowTime' (copia SQL de hasStarted) NO queda cubierta; el rechazo de la reserva no distingue causa.",
+      "3_suite": "PASS: 500 tests, 0 fallos (reejecutada).",
+      "4_hexagonal": "PASS: HexagonalArchitectureTest 4/4.",
+      "5_residual_copies": "PASS con observacion: no quedan copias Java de hasStarted/fits/SLOT_MINUTES. Persiste en JdbcAvailabilityQueries la condicion SQL de 'ya empezo' (s1.start_time > :nowTime), inevitable por eficiencia pero sin cobertura de equivalencia.",
+      "6_no_behavior_change": "PASS: sin cambios en migraciones, resources ni citas-web. Specialty.java solo cambia el valor de SLOT_MINUTES a alias (30, mismo valor; fuera de alcance pero inocuo). isOnGrid exige nanos==0 tambien en canHost (antes no); imposible para bloques porque el constructor ya exigia rejilla con nanos 0, y canHost con start no alineado por nanos ahora da false (antes true en caso patologico); sin impacto en API. Cambios en docs/wiki/.obsidian son ruido del editor, no de LOOP_03 (conviene no commitearlos)."
+    }
+  }
+}

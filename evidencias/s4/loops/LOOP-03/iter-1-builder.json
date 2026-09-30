@@ -1,0 +1,21 @@
+{
+  "goal": "LOOP_03 una regla, un sitio: unificar criterio 'ya empezo' y encaje de slots consecutivos en domain/schedule/AgendaRules",
+  "iteration": 1,
+  "builder": {
+    "filesTouched": [
+      "src/main/java/com/fcv/citas/domain/schedule/AgendaRules.java (nuevo)",
+      "src/main/java/com/fcv/citas/domain/schedule/AvailabilityBlock.java",
+      "src/main/java/com/fcv/citas/domain/appointment/Appointment.java",
+      "src/main/java/com/fcv/citas/domain/appointment/TimeSlot.java",
+      "src/main/java/com/fcv/citas/domain/catalog/Specialty.java",
+      "src/main/java/com/fcv/citas/infrastructure/persistence/appointment/JdbcAvailabilityQueries.java",
+      "src/test/java/com/fcv/citas/domain/schedule/AgendaRulesTest.java (nuevo)",
+      "src/test/java/com/fcv/citas/infrastructure/persistence/appointment/SearchBookingEquivalenceIntegrationTest.java (nuevo)"
+    ],
+    "openFindings": [
+      "SlotAllocator.java:73 y ProfessionalScheduleController.java:93 conservan una copia de !start.isAfter(now); fuera de alcance"
+    ]
+  },
+  "backendTests": { "total": 500, "failures": 0, "errors": 0, "baseline": 487, "added": 13 },
+  "result": "PASS"
+}
