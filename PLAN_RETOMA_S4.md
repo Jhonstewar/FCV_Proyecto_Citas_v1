@@ -348,12 +348,12 @@ Alternativa: reconciliar contrato frontend ↔ backend hasta que `scripts/e2e-sm
 
 ### F10 — Verificación, deuda de S2 y cierre
 
-- [ ] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3 — **parcial**: F5 verificó HU-027, HU-028 y HU-031 (y de paso HU-021, HU-022 CA-03 y HU-029 por el backend). Quedan **8 HU en `Aprobada` que nunca ha visto un verificador**: HU-006, HU-007, HU-008, HU-009, HU-012, HU-020, HU-021, HU-026
-- [ ] HU a `Completada` solo con matriz completa; las que no, quedan abiertas con su causa — **cero HU cerradas en S4 todavía**. Hay **8 en `En validación`** esperando cierre: HU-005, HU-011, HU-016, HU-022 y HU-029 (deuda de S3) + HU-027, HU-028 y HU-031 (de F5). A todas les falta la verificación de frontend criterio a criterio y la prueba manual en navegador
-- [ ] Comparación del modelo 3FN propio contra `database/reference/` → wiki `datos-modelo-3fn` — `datos-modelo-3fn.md:17-20` sigue diciendo que está pendiente desde S2
-- [ ] Guía de prueba manual en navegador con los tres roles (`EVIDENCIAS_S4.md`), incluido el pendiente de S2 — `EVIDENCIAS_S4.md` solo tiene la §1 de LOOP_01
-- [ ] Wiki: LINT, `index.md`, `log.md` — `index.md` y `log.md` sí actualizados el 2026-09-30; **falta el LINT** (la última entrada `lint` es del 2026-09-23)
-- [ ] Commit de cierre en los tres repos (el texto sugerido de la guía, `feat(s4): complete appointment lifecycle with autonomous verification loops`, citado en el cuerpo; el mensaje en español) — los commits del 2026-09-25 son de pausa, no de cierre
+- [x] `backend-verifier` y `frontend-verifier` HU por HU sobre todo el alcance del §3 — hecho el 2026-10-04: backend leído contra código y pruebas, frontend con vitest/typecheck/lint/build; re-verificación acotada de las 16 pruebas nuevas (8 de backend, 8 de frontend)
+- [x] HU a `Completada` solo con matriz completa — 2026-10-04: **25 Completada, 7 En validación** (HU-005, 007, 009, 011, 012, 022, 028), HU-033 En desarrollo, HU-034..036 Borrador. Las 7 abiertas lo están por un único motivo cada una (ver `scrum/README.md`): casi todas esperan la prueba manual en navegador; HU-022 y HU-028 tienen además una decisión pendiente
+- [x] Comparación del modelo 3FN propio contra `database/reference/` → wiki `datos-modelo-3fn` — ya hecha el 2026-09-30; reconfirmada el 2026-10-04. `database/reference/db.sql` no existe (pregunta abierta C5), así que las columnas no clave no se pueden comparar
+- [ ] Guía de prueba manual en navegador con los tres roles — la guía está escrita (`EVIDENCIAS_S4.md` §3) pero **nadie la ha ejecutado**; es lo que mantiene abiertas las 7 HU de arriba
+- [x] Wiki: LINT, `index.md`, `log.md` — hechos el 2026-10-04 (`lint` y `learn` en `log.md`)
+- [ ] Commit de cierre en los tres repos — el 2026-10-04 se hizo un commit de verificación (`test(s4)`/`docs(s4)`), **no** el de cierre: S4 no se cierra hasta ejecutar la guía manual y decidir las 7 HU abiertas
 - [x] **Decisión del usuario:** push y merge `develop → main` — hecho el 2026-09-25 (PR #3: `0ae5184` raíz, `016baae` citas-api). Se hizo **antes** de F5/F8/F9/F10, así que `main` lleva S4 a medio verificar; el usuario lo aceptó así el 2026-09-30 (pregunta abierta R2)
 
 🔖 **F10** — push de `develop` (con confirmación) y, si se decide, merge a `main`
@@ -385,6 +385,8 @@ Una línea por punto de control alcanzado (fecha · fase · commits).
 - 2026-09-30 · 🔖 **F8 cerrada.** LOOP_03 "una regla, un sitio" PASS en 2 iteraciones: `domain/schedule/AgendaRules` es la única fuente de "ya empezó", encaje de slots y `SLOT_MINUTES`; backend 487 → 500. Siguiente: F9 y F10
 
 - 2026-09-30 · 🔖 **F9 cerrada.** Errores de Spring y `WWW-Authenticate` en español (backend 507), contratos REST corte S4, `ERROR_CODES`/`API_ROUTES` fijados por prueba, accesibilidad del Modal y errores de campo (frontend 234), smoke e2e ampliado y ejecutado contra la API real. Siguiente: F10
+
+- 2026-10-04 · 🔖 **F10 casi cerrada.** Verificación independiente de todo el alcance, 16 pruebas nuevas (backend 521/521, frontend 256/256), 25 HU `Completada`, LINT y LEARN de la wiki. **Falta ejecutar la guía de prueba manual** (`EVIDENCIAS_S4.md` §3), que decide las 7 HU abiertas, y el commit de cierre
 
 ## ▶ Dónde retomar (escrito al pausar el 2026-09-25, revisado el 2026-09-30)
 
