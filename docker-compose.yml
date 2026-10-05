@@ -71,6 +71,13 @@ services:
       # Primer ADMIN (decision D5, S3): vacios = no se crea ninguno.
       ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
       ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      # Automatizaciones n8n (HU-034/HU-035). Vacios = cadena de automatizacion cerrada y
+      # publicacion a n8n desactivada.
+      AUTOMATION_API_KEY: ${AUTOMATION_API_KEY:-}
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET:-}
+      N8N_WEBHOOK_WF001_URL: ${N8N_WEBHOOK_WF001_URL:-}
+      N8N_WEBHOOK_WF002_URL: ${N8N_WEBHOOK_WF002_URL:-}
+      N8N_WEBHOOK_WF003_URL: ${N8N_WEBHOOK_WF003_URL:-}
 
     ports:
       - "${API_PORT:-8081}:8080"
